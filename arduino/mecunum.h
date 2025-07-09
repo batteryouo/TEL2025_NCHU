@@ -13,9 +13,9 @@
 #define RPWM_OUTPUT_RR 11
 #define LPWM_OUTPUT_RR 12
 
-#define Chassis_LX 0.25 // unit: (m)
-#define Chassis_LY 0.25 // unit: (m)
-#define Mecanum_Wheel_Radius 0.1 // unit: (m)
+#define Chassis_LX 0.21 // unit: (m)
+#define Chassis_LY 0.19 // unit: (m)
+#define Mecanum_Wheel_Radius 0.07 // unit: (m)
 
 #define MAX_VX 2.5 // unit: (m/s)
 #define MAX_VY 2.5 // unit: (m/s)

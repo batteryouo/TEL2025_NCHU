@@ -47,7 +47,7 @@ void mec::Mecanum::_computeMecanumParam(float vx, float vy, float w, int *motor_
     
     float length_x_y = Chassis_LX + Chassis_LY;
 
-    float max_motor_w = fabs( (MAX_VX + MAX_VY + length_x_y*MAX_W)/Mecanum_Wheel_Radius ); // add abs
+    float max_motor_w = fabs( (float)(MAX_VX + MAX_VY + length_x_y*MAX_W)/Mecanum_Wheel_Radius ); 
     float min_motor_w = -max_motor_w;
     
     float tmp_motor_w[4] = {0};
