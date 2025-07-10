@@ -17,8 +17,8 @@
 #define Chassis_LY 0.19 // unit: (m)
 #define Mecanum_Wheel_Radius 0.07 // unit: (m)
 
-#define MAX_VX 2.5 // unit: (m/s)
-#define MAX_VY 2.5 // unit: (m/s)
+#define MAX_VX 1 // unit: (m/s)
+#define MAX_VY 1 // unit: (m/s)
 #define MAX_W 16 // unit: (rad/s)
 
 namespace mec{
