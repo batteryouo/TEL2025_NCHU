@@ -7,7 +7,6 @@ void setup() {
 }
 
 void loop() {
-    mecanum.move(1 , 0, 0);
+    mecanum.move(1, 0, 0);
     delay(10);
-
 }

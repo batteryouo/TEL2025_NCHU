@@ -34,7 +34,8 @@ namespace mec{
                     Mecanum();
                     ~Mecanum();
                     void move(float vx, float vy, float w);
-                    
+                    void stop();
+                    void movePolar(float speed, float angle, float w = 0);
                     
             private:
                     void _motor(int pinR, int pinL, int speed);
