@@ -8,11 +8,12 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(sensor_msgs REQUIRED)
 find_package(serial REQUIRED)
 find_package(communicate_msg REQUIRED)
 
 add_executable(test_communicate src/test_communicate.cpp)
-ament_target_dependencies(test_communicate rclcpp serial communicate_msg)
+ament_target_dependencies(test_communicate rclcpp sensor_msgs serial communicate_msg)
 
 install(TARGETS test_communicate DESTINATION lib/${PROJECT_NAME})
 
