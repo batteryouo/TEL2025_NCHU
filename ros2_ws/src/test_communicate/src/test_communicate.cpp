@@ -24,10 +24,10 @@ class SerialObj: public rclcpp::Node{
 	private:
 		// left x-axis(joy): 1, y-axis(joy): 0, LT: 2, RT: 5
 		void joy_callback(const sensor_msgs::msg::Joy::SharedPtr msg){
-			float v_x = -msg->axes[1];
-			float v_y = msg->axes[0];
+			float v_x = msg->axes[1];
+			float v_y = -msg->axes[0];
 
-			float w = -(((1- msg->axes[2]) - (1 - msg->axes[5])) / 2);
+			float w = (((1- msg->axes[2]) - (1 - msg->axes[5])) / 2);
 
 			float speed = std::sqrt(v_x*v_x + v_y*v_y);
 			float theta = std::atan2(v_y, v_x);
