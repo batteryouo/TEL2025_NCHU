@@ -16,15 +16,15 @@ float w = 0.0;
 
 void setup() {
     Serial.begin(115200);
-	imu.init(&mpu);
+    imu.init(&mpu);
     pinMode(13, OUTPUT);
     digitalWrite(13, test);
 
 }
 
 void loop() {
-	float ypr[3];
-	imu.getYPR(ypr);
+    float ypr[3];
+    imu.getYPR(ypr);
     if(tmp_communication()){
         speed *= 5*sqrt(MAX_VX*MAX_VX + MAX_VY*MAX_VY);
         w *= MAX_W;
