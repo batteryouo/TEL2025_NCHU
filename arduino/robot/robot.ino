@@ -1,7 +1,12 @@
 #include "mecunum.h"
+#include "MPU6050_6Axis_MotionApps20.h"
+#include "IMU.h"
 
 #define DATA_LENGTH 16
+
 mec::Mecanum mecanum;
+MPU6050 mpu;
+IMU imu;
 
 bool test = true;
 
@@ -11,15 +16,15 @@ float w = 0.0;
 
 void setup() {
     Serial.begin(115200);
+    imu.init(&mpu);
     pinMode(13, OUTPUT);
     digitalWrite(13, test);
-    // while(true){
-    //     mecanum.movePolar(-5, 0, 0);
-    //     delay(10);
-    // }
+
 }
 
 void loop() {
+    float ypr[3];
+    imu.getYPR(ypr);
     if(tmp_communication()){
         speed *= 5*sqrt(MAX_VX*MAX_VX + MAX_VY*MAX_VY);
         w *= MAX_W;

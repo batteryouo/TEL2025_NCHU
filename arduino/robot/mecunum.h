@@ -21,6 +21,7 @@
 #define MAX_VY 1 // unit: (m/s)
 #define MAX_W 16 // unit: (rad/s)
 
+
 namespace mec{
 
     typedef struct _MotorPin {
@@ -50,7 +51,6 @@ namespace mec{
         MOTOR_FR,
         MOTOR_RR
     };
-
 
     
 };
