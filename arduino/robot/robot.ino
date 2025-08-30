@@ -8,29 +8,29 @@ mec::Mecanum mecanum;
 MPU6050 mpu;
 IMU imu;
 
-bool test = true;
+bool LED_BLINK_STATE = true;
 
 float speed = 0.0;
 float angle = 0.0;
 float w = 0.0;
 
 void setup() {
-    Serial.begin(115200);
-    imu.init(&mpu);
-    pinMode(13, OUTPUT);
-    digitalWrite(13, test);
+	Serial.begin(115200);
+	imu.init(&mpu);
+	pinMode(13, OUTPUT);
+	digitalWrite(13, LED_BLINK_STATE);
 
 }
 
 void loop() {
-    float ypr[3];
-    imu.getYPR(ypr);
-    if(tmp_communication()){
-        speed *= 5*sqrt(MAX_VX*MAX_VX + MAX_VY*MAX_VY);
-        w *= MAX_W;
-        mecanum.movePolar(speed, angle, w);
-    }
-    // delay(10);
+	float ypr[3];
+	imu.getYPR(ypr);
+	if(tmp_communication()){
+		speed *= 2.5*sqrt(MAX_VX*MAX_VX + MAX_VY*MAX_VY);
+		w *= MAX_W;
+		mecanum.movePolar(speed, angle, w);
+	}
+	// delay(10);
 
 }
 
@@ -52,13 +52,13 @@ bool tmp_communication() {
 				
 				index = 0;  // Reset index after processing a complete message
 
-                speed = *((float*)(recv_buffer+2));
-            	angle = *((float*)(recv_buffer+6));
-	            w = *((float*)(recv_buffer+10));
+				speed = *((float*)(recv_buffer+2));
+				angle = *((float*)(recv_buffer+6));
+				w = *((float*)(recv_buffer+10));
 
-				test = !test;
-				digitalWrite(13, test);
-                Serial.flush();
+				LED_BLINK_STATE = !LED_BLINK_STATE;
+				digitalWrite(13, LED_BLINK_STATE);
+				Serial.flush();
 				return true;
 			}
 			else{
@@ -68,6 +68,6 @@ bool tmp_communication() {
 
 	}
 
-    return false;
+	return false;
 
 }
