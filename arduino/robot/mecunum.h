@@ -23,77 +23,76 @@
 
 
 namespace mec{
-	/**
-	 * @brief Structure representing a motor’s PWM pins.
-	 */
-	typedef struct _MotorPin {
-		int RPWM_OUTPUT;
-		int LPWM_OUTPUT;
-	} MotorPin;
+/**
+ * @brief Structure representing a motor’s PWM pins.
+ */
+typedef struct _MotorPin {
+	int RPWM_OUTPUT;
+	int LPWM_OUTPUT;
+} MotorPin;
 	
-	class Mecanum {
+class Mecanum {
+
+	public:
+		Mecanum();
+		~Mecanum();
+
+		/**
+		 * @brief Move the chassis with velocity components (vx, vy, w).
+		 *
+		 * @param vx Velocity in x direction (m/s).
+		 * @param vy Velocity in y direction (m/s).
+		 * @param w  Angular velocity (rad/s).
+		 */
+		void move(float vx, float vy, float w);
+
+		/**
+		 * @brief Stop all motors immediately.
+		 */					
+		void stop();
 	
-			public:
-
-					Mecanum();
-					~Mecanum();
-
-					/**
-					 * @brief Move the chassis with velocity components (vx, vy, w).
-					 *
-					 * @param vx Velocity in x direction (m/s).
-					 * @param vy Velocity in y direction (m/s).
-					 * @param w  Angular velocity (rad/s).
-					 */
-					void move(float vx, float vy, float w);
-
-					/**
-					 * @brief Stop all motors immediately.
-					 */					
-					void stop();
-
-					/**
-					 * @brief Move using polar coordinates.
-					 *
-					 * @param speed Linear speed (m/s).
-					 * @param angle Direction angle (rad).
-					 * @param w     Angular velocity (rad/s). Default = 0.
-					 */					
-					void movePolar(float speed, float angle, float w = 0);
+		/**
+		 * @brief Move using polar coordinates.
+		 *
+		 * @param speed Linear speed (m/s).
+		 * @param angle Direction angle (rad).
+		 * @param w     Angular velocity (rad/s). Default = 0.
+		 */					
+		void movePolar(float speed, float angle, float w = 0);
 					
-			private:
-					/**
-					 * @brief Control one motor with PWM signals.
-					 *
-					 * @param pinR Forward PWM pin.
-					 * @param pinL Reverse PWM pin.
-					 * @param speed Speed input (-255 ~ 255).
-					 */
-					void _motor(int pinR, int pinL, int speed);
+	private:
+		/**
+		 * @brief Control one motor with PWM signals.
+		 *
+		 * @param pinR Forward PWM pin.
+		 * @param pinL Reverse PWM pin.
+		 * @param speed Speed input (-255 ~ 255).
+		 */
+		void _motor(int pinR, int pinL, int speed);
 
-					/**
-					 * @brief Compute individual motor PWM values from chassis velocity.
-					 *
-					 * @param vx Velocity in x direction (m/s).
-					 * @param vy Velocity in y direction (m/s).
-					 * @param w  Angular velocity (rad/s).
-					 * @param motor_pwm Array to store computed PWM values for 4 motors.
-					 */
-					void _computeMecanumParam(float vx, float vy, float w, int *motor_pwm);
+		/**
+		 * @brief Compute individual motor PWM values from chassis velocity.
+		 *
+		 * @param vx Velocity in x direction (m/s).
+		 * @param vy Velocity in y direction (m/s).
+		 * @param w  Angular velocity (rad/s).
+		 * @param motor_pwm Array to store computed PWM values for 4 motors.
+		 */
+		void _computeMecanumParam(float vx, float vy, float w, int *motor_pwm);
 
-					MotorPin motorPins[4];  ///< Array of motor pin configurations.
+		MotorPin motorPins[4];  ///< Array of motor pin configurations.
 			
-	};
+};
 
-	/**
-	 * @brief Motor ID corresponding to chassis position.
-	 */
-	enum MotorID {
-		MOTOR_FL = 0,
-		MOTOR_RL,
-		MOTOR_FR,
-		MOTOR_RR
-	};
+/**
+ * @brief Motor ID corresponding to chassis position.
+ */
+enum MotorID {
+	MOTOR_FL = 0,
+	MOTOR_RL,
+	MOTOR_FR,
+	MOTOR_RR
+};
 
 	
 };
