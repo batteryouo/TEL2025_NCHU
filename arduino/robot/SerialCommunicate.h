@@ -3,34 +3,6 @@
 
 #define CMD_HEADER_LENGTH 6
 
-#include <Arduino.h>
-
-template <class _T>
-class vector{
-	public:
-		vector();
-		vector(void *dataBegin, void *dataEnd);
-		~vector();
-
-		void push_back(_T inputData);
-		void clear();
-		_T at(size_t i);
-		void *begin();
-		void *end();
-		size_t size();
-
-		_T operator[](size_t i);
-	
-	private:
-		size_t buffer_size = 50;
-		size_t _size = 0;
-
-		_T *_data;
-
-		void *_begin;
-		void *_end;
-};
-
 namespace cmd{
 
 enum Command_Type{
