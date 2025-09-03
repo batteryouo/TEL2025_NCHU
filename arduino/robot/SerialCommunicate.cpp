@@ -2,7 +2,6 @@
 
 #include "SerialCommunicate.h"
 
-
 cmd::CommandProtocol::CommandProtocol(){
 
 }
