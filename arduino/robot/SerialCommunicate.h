@@ -3,35 +3,12 @@
 
 #define CMD_HEADER_LENGTH 6
 
-#include <Arduino.h>
-
 namespace cmd{
 
 enum Command_Type{
 	MOVE_CARTESIAN,
 	MOVE_POLAR,
 	IMU_YPR
-};
-
-class Packet{
-	public:
-		Packet(uint8_t *initPacket, size_t packetLength);
-		~Packet();
-		void write(uint8_t *inputPacket, size_t packetLength);
-		inline uint8_t *packet();
-		inline size_t packetLength();
-		inline uint8_t command();
-		inline uint8_t checkSum_1();
-		inline uint8_t checkSum_2();
-		inline uint8_t *data();
-	private:
-		uint8_t *_packet = nullptr;
-		size_t _packetLength = 0;
-		uint8_t _command = 0xFF;
-		uint8_t _checkSum_1 = 0x00;
-		uint8_t _checkSum_2 = 0x00;
-		uint8_t *_data = nullptr;
-
 };
 
 class CommandProtocol{
@@ -59,6 +36,7 @@ class CommandProtocol{
 		};
 
 };
+
 };
 
 class SerialCommunicate: private cmd::CommandProtocol{
