@@ -1,6 +1,8 @@
 #ifndef SERIALCOMMUNICATE
 #define SERIALCOMMUNICATE
 
+#include "vector.hpp"
+
 #define CMD_HEADER_LENGTH 6
 
 namespace cmd{
@@ -8,7 +10,8 @@ namespace cmd{
 enum Command_Type{
 	MOVE_CARTESIAN,
 	MOVE_POLAR,
-	IMU_YPR
+	IMU_YPR,
+	ERROR
 };
 
 class CommandProtocol{
@@ -25,11 +28,18 @@ class CommandProtocol{
 	public:
 		CommandProtocol();
 		~CommandProtocol();
-		bool computeCheckSum(const uint8_t *packet, uint8_t packetLength, uint8_t *checkSum_1, uint8_t *checkSum_2);
-		bool isCheckSumValid(const uint8_t *packet, uint8_t packetLength);
+
+		bool packetValid(const vector<uint8_t> &packet);
+		vector<uint8_t> buildPacket(Command_Type inputCommand, const vector<uint8_t> &inputData);	
+		bool parsePacket(const vector<uint8_t> &packet);
+		Command_Type command();
+		vector<uint8_t> data();
+
 	private:
 		static constexpr uint8_t HeaderLength = CMD_HEADER_LENGTH;
-		bool _validPacket(const uint8_t *packet, uint8_t packetLength);
+		
+		Command_Type _command;
+		vector<uint8_t> _data;		
 
 		enum HEADER_INFO{
 			Start1, Start2, Packet_SIZE, Command, CheckSum_1, CheckSum_2
