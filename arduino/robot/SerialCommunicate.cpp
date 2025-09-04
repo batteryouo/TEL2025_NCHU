@@ -27,7 +27,7 @@ bool cmd::CommandProtocol::packetValid(const vector<uint8_t> &packet){
 
 }
 
-vector<uint8_t> cmd::CommandProtocol::buildPacket(const vector<uint8_t> &inputData){
+vector<uint8_t> cmd::CommandProtocol::buildPacket(Command_Type inputCommand, const vector<uint8_t> &inputData){
 
 }
 

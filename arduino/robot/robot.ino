@@ -1,6 +1,7 @@
 #include "mecunum.h"
 #include "MPU6050_6Axis_MotionApps20.h"
 #include "IMU.h"
+#include "SerialCommunicate.h"
 
 #define DATA_LENGTH 16
 
