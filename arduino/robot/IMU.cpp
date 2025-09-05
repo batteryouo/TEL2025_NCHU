@@ -25,46 +25,48 @@ IMU::~IMU(){
 void IMU::init(MPU6050 *mpu){
 	_mpu = mpu;
 
-	while (!Serial);
-	Serial.println(F("Initializing I2C devices..."));
+	// while (!Serial);
+	// Serial.println(F("Initializing I2C devices..."));
+	
 	_mpu->initialize();
+
 	pinMode(INTERRUPT_PIN, INPUT);
-	// verify connection
-	Serial.println(F("Testing device connections..."));
-	Serial.println(_mpu->testConnection() ? F("MPU6050 connection successful") : F("MPU6050 connection failed"));
+	// // verify connection
+	// Serial.println(F("Testing device connections..."));
+	// Serial.println(_mpu->testConnection() ? F("MPU6050 connection successful") : F("MPU6050 connection failed"));
 
 	// load and configure the DMP
-	Serial.println(F("Initializing DMP..."));
+	// Serial.println(F("Initializing DMP..."));
 	_devStatus = _mpu->dmpInitialize();
 	_mpu->CalibrateGyro(15);
 	_mpu->CalibrateAccel(15);
 	// mpu.PrintActiveOffsets();
-	// delay(10000);
+
 	// make sure it worked (returns 0 if so)
 	if (_devStatus == 0) {
 		// turn on the DMP, now that it's ready
-		Serial.println(F("Enabling DMP..."));
+		// Serial.println(F("Enabling DMP..."));
 		_mpu->setDMPEnabled(true);
 
 		// enable Arduino interrupt detection
-		Serial.println(F("Enabling interrupt detection (Arduino external interrupt 0)..."));
+		// Serial.println(F("Enabling interrupt detection (Arduino external interrupt 0)..."));
 		attachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN), DMPDataReady, RISING);
 		_MPUIntStatus = _mpu->getIntStatus();
 
 		// set our DMP Ready flag so the main loop() function knows it's okay to use it
-		Serial.println(F("DMP ready! Waiting for first interrupt..."));
+		// Serial.println(F("DMP ready! Waiting for first interrupt..."));
 		_DMPReady = true;
 
 		// get expected DMP packet size for later comparison
 		_packetSize = _mpu->dmpGetFIFOPacketSize();
 	}
 	else {
-		// 1 = initial memory load failed
-		// 2 = DMP configuration updates failed
-		// (if it's going to break, usually the code will be 1)
-		Serial.print(F("DMP Initialization failed (code "));
-		Serial.print(_devStatus);
-		Serial.println(F(")"));
+		// // 1 = initial memory load failed
+		// // 2 = DMP configuration updates failed
+		// // (if it's going to break, usually the code will be 1)
+		// Serial.print(F("DMP Initialization failed (code "));
+		// Serial.print(_devStatus);
+		// Serial.println(F(")"));
 	}
 }
 
@@ -76,12 +78,6 @@ bool IMU::getYPR(float *ypr){
 		Quaternion q;           // [w, x, y, z]         Quaternion container
 		_mpu->dmpGetQuaternion(&q, _FIFOBuffer);
 		_mpu->dmpGetEuler(ypr, &q);
-		Serial.print("euler\t");
-		Serial.print(ypr[0] * 180/M_PI);
-		Serial.print("\t");
-		Serial.print(ypr[1] * 180/M_PI);
-		Serial.print("\t");
-		Serial.println(ypr[2] * 180/M_PI);
 	}
 	return true;
 }
