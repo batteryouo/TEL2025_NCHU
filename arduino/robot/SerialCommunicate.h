@@ -1,7 +1,7 @@
 #ifndef SERIALCOMMUNICATE
 #define SERIALCOMMUNICATE
 
-#include "vector.hpp"
+#include "vector.h"
 
 #define CMD_HEADER_LENGTH 6
 

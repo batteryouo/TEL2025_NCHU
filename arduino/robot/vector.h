@@ -24,7 +24,7 @@ class vector{
 		vector& operator=(vector&& other); // move assignment
 	
 	private:
-		size_t DEFAULT_BUFFER_SIZE = 30;
+		size_t DEFAULT_BUFFER_SIZE = 10;
 		size_t _buffer_size = DEFAULT_BUFFER_SIZE;
 		size_t _size = 0;
 
