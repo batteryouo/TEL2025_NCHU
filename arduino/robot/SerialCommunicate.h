@@ -12,7 +12,7 @@ enum Command_Type{
 	MOVE_POLAR,
 	IMU_YPR,
 	SWITCH_STATE,
-	ERROR
+	None
 };
 
 class CommandProtocol{
@@ -56,14 +56,21 @@ class CommandProtocol{
 
 class SerialCommunicate: private cmd::CommandProtocol{
 	public:
-		SerialCommunicate(int bufferSize = 100);
+		SerialCommunicate(HardwareSerial serial,int bufferSize = 100);
 		~SerialCommunicate();
+		cmd::Command_Type read(vector<uint8_t> &outputData);
+		void write(const vector<uint8_t> &inputData, cmd::Command_Type inputCommand);
 		
+		void float2char();
+		void char2float();
 	private:
 		uint8_t *_commandBuffer;
 		int _bufferSize = 1;
 		int _usage = 0;
 		int _bufferStart = 0;
+
+		
+
 		void _flush();
 };
 

@@ -74,7 +74,7 @@ void cmd::CommandProtocol::buildPacket(Command_Type inputCommand, const vector<u
 bool cmd::CommandProtocol::parsePacket(const vector<uint8_t> &packet){
 	_data.clear();
 	if(!packetValid(packet)){
-		_command = Command_Type::ERROR;
+		_command = Command_Type::None;
 		return false;
 	}
 
@@ -116,7 +116,7 @@ size_t cmd::CommandProtocol::_expectPacketSize(cmd::Command_Type inputCommand){
 		case Command_Type::SWITCH_STATE :
 			expectSize = HeaderLength + 1; // (uint8_t)state
 
-		case Command_Type::ERROR :
+		case Command_Type::None :
 			expectSize = HeaderLength;
 
 		default:
@@ -127,7 +127,7 @@ size_t cmd::CommandProtocol::_expectPacketSize(cmd::Command_Type inputCommand){
 	return expectSize;
 }
 
-SerialCommunicate::SerialCommunicate(int bufferSize):_bufferSize(bufferSize){
+SerialCommunicate::SerialCommunicate(HardwareSerial serial,int bufferSize):_bufferSize(bufferSize){
 	
 	_commandBuffer = new uint8_t[bufferSize];
 
@@ -135,6 +135,14 @@ SerialCommunicate::SerialCommunicate(int bufferSize):_bufferSize(bufferSize){
 
 SerialCommunicate::~SerialCommunicate(){
 	delete[] _commandBuffer;
+}
+
+cmd::Command_Type SerialCommunicate::read(vector<uint8_t> &outputData){
+	outputData.clear();
+
+	while(Serial.available()){
+
+	}
 }
 
 void SerialCommunicate::_flush(){
