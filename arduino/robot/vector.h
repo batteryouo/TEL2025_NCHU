@@ -15,11 +15,13 @@ class vector{
 		void push_back(_T inputData);
 		void clear();
 		_T &at(size_t i);
+		_T &at(size_t i) const;
 		_T *begin();
 		_T *end();
-		size_t size();
+		size_t size() const;
 
 		_T &operator[](size_t i);
+		_T &operator[](size_t i) const;
 		vector& operator=(const vector& other); // copy assignment
 		vector& operator=(vector&& other); // move assignment
 	
@@ -141,7 +143,21 @@ _T& vector<_T>::at(size_t i) {
 }
 
 template <class _T>
+_T& vector<_T>::at(size_t i) const{
+	if (i >= _size) {
+		// Arduino has no exceptions → return last element as fallback
+		return _data[_size - 1];
+	}
+	return _data[i];
+}
+
+template <class _T>
 _T& vector<_T>::operator[](size_t i) {
+	return _data[i]; // unchecked
+}
+
+template <class _T>
+_T& vector<_T>::operator[](size_t i) const{
 	return _data[i]; // unchecked
 }
 
@@ -156,7 +172,7 @@ _T* vector<_T>::end() {
 }
 
 template <class _T>
-size_t vector<_T>::size() {
+size_t vector<_T>::size() const{
 	return _size;
 }
 
