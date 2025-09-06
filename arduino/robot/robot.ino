@@ -17,7 +17,6 @@ float angle = 0.0;
 float w = 0.0;
 
 void setup() {
-	Serial.begin(115200);
 	imu.init(&mpu);
 	pinMode(13, OUTPUT);
 	digitalWrite(13, LED_BLINK_STATE);
