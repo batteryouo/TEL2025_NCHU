@@ -142,9 +142,9 @@ cmd::Command_Type SerialCommunicate::read(vector<uint8_t> &outputData){
 	
 	cmd::Command_Type returnCMD = cmd::Command_Type::None;
 
-	while(_serial->available()){
+	while(Serial.available()){
 		
-		char c = _serial->read();
+		char c = Serial.read();
 
 		_packet.push_back(c);
 		
@@ -174,7 +174,7 @@ void SerialCommunicate::write(const vector<uint8_t> &inputData, cmd::Command_Typ
 	vector<uint8_t> outputPacket;
 	buildPacket(inputCommand, inputData, outputPacket);
 
-	_serial->write(outputPacket.begin(), outputPacket.size());
+	Serial.write(outputPacket.begin(), outputPacket.size());
 }
 
 bool SerialCommunicate::_startFlag(){
