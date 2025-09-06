@@ -142,9 +142,9 @@ cmd::Command_Type SerialCommunicate::read(vector<uint8_t> &outputData){
 	
 	cmd::Command_Type returnCMD = cmd::Command_Type::None;
 
-	while(_serial->available()){
+	while(Serial.available()){
 		
-		char c = _serial->read();
+		char c = Serial.read();
 
 		_packet.push_back(c);
 		
@@ -155,8 +155,11 @@ cmd::Command_Type SerialCommunicate::read(vector<uint8_t> &outputData){
 			continue;
 		}
 
-		if(_packet.size() == _packet[HEADER_INFO::Packet_SIZE]){
-			parsePacket(_packet);
+		if(_packet.size() != _packet[HEADER_INFO::Packet_SIZE]){
+			continue;
+		}
+
+		if(parsePacket(_packet)){
 			outputData = data();
 			returnCMD = command();
 			_packet.clear();
@@ -171,7 +174,7 @@ void SerialCommunicate::write(const vector<uint8_t> &inputData, cmd::Command_Typ
 	vector<uint8_t> outputPacket;
 	buildPacket(inputCommand, inputData, outputPacket);
 
-	_serial->write(outputPacket.begin(), outputPacket.size());
+	Serial.write(outputPacket.begin(), outputPacket.size());
 }
 
 bool SerialCommunicate::_startFlag(){
@@ -189,5 +192,5 @@ bool SerialCommunicate::_startFlag(){
 		return (_packet[HEADER_INFO::Packet_SIZE] == _expectPacketSize((cmd::Command_Type)_packet[HEADER_INFO::Command]));
 	}
 
-	return false;
+	return true;
 }
