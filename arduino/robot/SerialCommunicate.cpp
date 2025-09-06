@@ -50,7 +50,7 @@ bool cmd::CommandProtocol::packetValid(const vector<uint8_t> &packet){
 }
 
 void cmd::CommandProtocol::buildPacket(Command_Type inputCommand, const vector<uint8_t> &inputData, vector<uint8_t> &outputPacket){
-	if(!outputPacket.size()){
+	if(outputPacket.size()){
 		outputPacket.clear();
 	}
 
@@ -82,6 +82,7 @@ bool cmd::CommandProtocol::parsePacket(const vector<uint8_t> &packet){
 	for(size_t i = HeaderLength; i< packet[Packet_SIZE]; ++i){
 		_data.push_back(packet[i]);
 	}
+	return true;
 }
 
 cmd::Command_Type cmd::CommandProtocol::command(){
@@ -112,40 +113,81 @@ size_t cmd::CommandProtocol::_expectPacketSize(cmd::Command_Type inputCommand){
 			break;
 		case Command_Type::IMU_YPR :
 			expectSize = HeaderLength + 12; // (float)y, (float)p, (float)r
+			break;
 		
 		case Command_Type::SWITCH_STATE :
 			expectSize = HeaderLength + 1; // (uint8_t)state
-
+			break;
 		case Command_Type::None :
-			expectSize = HeaderLength;
-
+			expectSize = 0;
+			break;
 		default:
-			expectSize = HeaderLength;
+			expectSize = 0;
 			break;
 	}
 
 	return expectSize;
 }
 
-SerialCommunicate::SerialCommunicate(HardwareSerial serial,int bufferSize):_bufferSize(bufferSize){
+SerialCommunicate::SerialCommunicate(HardwareSerial *serial, int baud):_serial(serial){
 	
-	_commandBuffer = new uint8_t[bufferSize];
+	_serial->begin(baud);
 
 }
 
 SerialCommunicate::~SerialCommunicate(){
-	delete[] _commandBuffer;
 }
 
 cmd::Command_Type SerialCommunicate::read(vector<uint8_t> &outputData){
-	outputData.clear();
+	
+	cmd::Command_Type returnCMD = cmd::Command_Type::None;
 
-	while(Serial.available()){
+	while(_serial->available()){
+		
+		char c = _serial->read();
 
+		_packet.push_back(c);
+		
+		bool startFlag = _startFlag();
+
+		if(!startFlag){
+			_packet.clear();
+			continue;
+		}
+
+		if(_packet.size() == _packet[HEADER_INFO::Packet_SIZE]){
+			parsePacket(_packet);
+			outputData = data();
+			returnCMD = command();
+			_packet.clear();
+			break;
+		}
+		
 	}
+	return returnCMD;
 }
 
-void SerialCommunicate::_flush(){
-	_usage = 0;
-	_bufferStart = 0;
+void SerialCommunicate::write(const vector<uint8_t> &inputData, cmd::Command_Type inputCommand){
+	vector<uint8_t> outputPacket;
+	buildPacket(inputCommand, inputData, outputPacket);
+
+	_serial->write(outputPacket.begin(), outputPacket.size());
+}
+
+bool SerialCommunicate::_startFlag(){
+
+	if(_packet.size() >= CMD_HEADER_LENGTH){
+		return true;
+	}
+	if(_packet.size() == 1 && _packet[HEADER_INFO::Start1] != '$'){
+		return false;
+	}
+	if(_packet.size() == 2 && _packet[HEADER_INFO::Start2] != 0x14){
+		return false;
+	}
+	if(_packet.size() >= 4){
+		return (_packet[HEADER_INFO::Packet_SIZE] == _expectPacketSize((cmd::Command_Type)_packet[HEADER_INFO::Command]));
+	}
+
+	return false;
 }

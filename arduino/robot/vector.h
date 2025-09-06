@@ -15,13 +15,13 @@ class vector{
 		void push_back(_T inputData);
 		void clear();
 		_T &at(size_t i);
-		_T &at(size_t i) const;
+		const _T &at(size_t i) const;
 		_T *begin();
 		_T *end();
 		size_t size() const;
 
 		_T &operator[](size_t i);
-		_T &operator[](size_t i) const;
+		const _T &operator[](size_t i) const;
 		vector& operator=(const vector& other); // copy assignment
 		vector& operator=(vector&& other); // move assignment
 	
@@ -41,7 +41,7 @@ vector<_T>::vector() {
 
 template <class _T>
 vector<_T>::vector(_T* dataBegin, _T* dataEnd) {
-	size_t n = static_cast<_T*>(dataEnd) - static_cast<_T*>(dataBegin);
+	size_t n = dataEnd - dataBegin;
 	_buffer_size = (n > 0 ? n: DEFAULT_BUFFER_SIZE);
 	_data = new _T[_buffer_size];
 	_size = n;
@@ -143,7 +143,7 @@ _T& vector<_T>::at(size_t i) {
 }
 
 template <class _T>
-_T& vector<_T>::at(size_t i) const{
+const _T& vector<_T>::at(size_t i) const{
 	if (i >= _size) {
 		// Arduino has no exceptions → return last element as fallback
 		return _data[_size - 1];
@@ -157,7 +157,7 @@ _T& vector<_T>::operator[](size_t i) {
 }
 
 template <class _T>
-_T& vector<_T>::operator[](size_t i) const{
+const _T& vector<_T>::operator[](size_t i) const{
 	return _data[i]; // unchecked
 }
 
