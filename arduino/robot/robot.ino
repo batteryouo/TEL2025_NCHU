@@ -8,6 +8,7 @@
 mec::Mecanum mecanum;
 MPU6050 mpu;
 IMU imu;
+SerialCommunicate serialCommunicate(&Serial);
 
 bool LED_BLINK_STATE = true;
 
