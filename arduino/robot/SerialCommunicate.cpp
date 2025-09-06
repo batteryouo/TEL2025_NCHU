@@ -155,8 +155,11 @@ cmd::Command_Type SerialCommunicate::read(vector<uint8_t> &outputData){
 			continue;
 		}
 
-		if(_packet.size() == _packet[HEADER_INFO::Packet_SIZE]){
-			parsePacket(_packet);
+		if(_packet.size() != _packet[HEADER_INFO::Packet_SIZE]){
+			continue;
+		}
+
+		if(parsePacket(_packet)){
 			outputData = data();
 			returnCMD = command();
 			_packet.clear();
@@ -189,5 +192,5 @@ bool SerialCommunicate::_startFlag(){
 		return (_packet[HEADER_INFO::Packet_SIZE] == _expectPacketSize((cmd::Command_Type)_packet[HEADER_INFO::Command]));
 	}
 
-	return false;
+	return true;
 }
