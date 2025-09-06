@@ -129,20 +129,24 @@ size_t cmd::CommandProtocol::_expectPacketSize(cmd::Command_Type inputCommand){
 	return expectSize;
 }
 
-SerialCommunicate::SerialCommunicate(HardwareSerial *serial, int baud):_serial(serial){
-	
+SerialCommunicate::SerialCommunicate(HardwareSerial *serial):_serial(serial){
 }
 
 SerialCommunicate::~SerialCommunicate(){
+}
+
+void SerialCommunicate::init(){
+	_serial->begin(115200);
+	_serial->flush();
 }
 
 cmd::Command_Type SerialCommunicate::read(vector<uint8_t> &outputData){
 	
 	cmd::Command_Type returnCMD = cmd::Command_Type::None;
 
-	while(Serial.available()){
+	while(_serial->available()){
 		
-		char c = Serial.read();
+		char c = _serial->read();
 
 		_packet.push_back(c);
 		
@@ -171,7 +175,7 @@ void SerialCommunicate::write(const vector<uint8_t> &inputData, cmd::Command_Typ
 	vector<uint8_t> outputPacket;
 	buildPacket(inputCommand, inputData, outputPacket);
 
-	Serial.write(outputPacket.begin(), outputPacket.size());
+	_serial->write(outputPacket.begin(), outputPacket.size());
 }
 
 bool SerialCommunicate::_startFlag(){

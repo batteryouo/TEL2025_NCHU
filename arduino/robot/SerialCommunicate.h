@@ -55,8 +55,9 @@ class CommandProtocol{
 
 class SerialCommunicate: private cmd::CommandProtocol{
 	public:
-		SerialCommunicate(HardwareSerial *serial, int baud = 115200);
+		SerialCommunicate(HardwareSerial *serial);
 		~SerialCommunicate();
+		void init();
 		cmd::Command_Type read(vector<uint8_t> &outputData);
 		void write(const vector<uint8_t> &inputData, cmd::Command_Type inputCommand);
 		
