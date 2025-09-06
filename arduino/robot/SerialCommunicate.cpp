@@ -131,8 +131,6 @@ size_t cmd::CommandProtocol::_expectPacketSize(cmd::Command_Type inputCommand){
 
 SerialCommunicate::SerialCommunicate(HardwareSerial *serial, int baud):_serial(serial){
 	
-	_serial->begin(baud);
-
 }
 
 SerialCommunicate::~SerialCommunicate(){
@@ -158,8 +156,7 @@ cmd::Command_Type SerialCommunicate::read(vector<uint8_t> &outputData){
 		if(_packet.size() != _packet[HEADER_INFO::Packet_SIZE]){
 			continue;
 		}
-
-		if(parsePacket(_packet)){
+		else if(parsePacket(_packet)){
 			outputData = data();
 			returnCMD = command();
 			_packet.clear();
