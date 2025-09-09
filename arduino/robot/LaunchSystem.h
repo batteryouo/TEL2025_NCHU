@@ -83,5 +83,20 @@ class BYJ48{
 		unsigned long _lastTime = 0;
 }; 
 
+class MicroSwitch{
+	public:
+		MicroSwitch(uint8_t pin);
+		~MicroSwitch();
+		bool state();
+	private:
+		unsigned long _triggerTime;
+		bool _state = false;
+};
+
+class ElevationAngleState{
+	public:
+		ElevationAngleState(uint8_t pinA, uint8_t pinB, uint8_t pinC, uint8_t pinD);
+		~ElevationAngleState();
+};
 
 #endif

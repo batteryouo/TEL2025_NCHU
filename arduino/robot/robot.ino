@@ -5,8 +5,6 @@
 #include "LaunchSystem.h"
 #include "SerialCommunicate.h"
 
-#define DATA_LENGTH 16
-
 mec::Mecanum mecanum;
 MPU6050 mpu;
 IMU imu;
@@ -19,7 +17,7 @@ void setup() {
 	imu.init(&mpu);
 	pinMode(13, OUTPUT);
 	digitalWrite(13, LED_BLINK_STATE);
-
+	Serial.flush();
 }
 
 void loop() {
