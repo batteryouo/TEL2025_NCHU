@@ -1,5 +1,5 @@
-#ifndef SERIALCOMMUNICATE
-#define SERIALCOMMUNICATE
+#ifndef SERIALCOMMUNICATE_H
+#define SERIALCOMMUNICATE_H
 
 #include "vector.h"
 
