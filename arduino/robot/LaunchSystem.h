@@ -1,6 +1,9 @@
 #ifndef LAUNCH_SYSTEM_H
 #define LAUNCH_SYSTEM_H
 
+#define SWITCH_ON 1
+#define SWITCH_OFF 0
+
 #include <Arduino.h>
 
 #include "I2Cdev.h"
@@ -85,18 +88,28 @@ class BYJ48{
 
 class MicroSwitch{
 	public:
+		MicroSwitch::MicroSwitch();
 		MicroSwitch(uint8_t pin);
 		~MicroSwitch();
 		bool state();
+		void initPin(uint8_t pin);
+
 	private:
 		unsigned long _triggerTime;
 		bool _state = false;
+		uint8_t _pin;
+		unsigned int _debouceTime = 50;
+		bool _isInit = false;
+		void _init(uint8_t pin);
 };
 
-class ElevationAngleState{
+class ElevationAngleSWState{
 	public:
-		ElevationAngleState(uint8_t pinA, uint8_t pinB, uint8_t pinC, uint8_t pinD);
-		~ElevationAngleState();
+		ElevationAngleSWState(uint8_t pinA, uint8_t pinB, uint8_t pinC, uint8_t pinD);
+		~ElevationAngleSWState();
+		void getState(uint8_t* state);
+	private:
+		MicroSwitch _sw[4];
 };
 
 #endif

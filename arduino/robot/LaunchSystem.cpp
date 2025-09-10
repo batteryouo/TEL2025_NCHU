@@ -209,3 +209,59 @@ bool IMU::getYPR(float *ypr){
 	}
 	return true;
 }
+
+MicroSwitch::MicroSwitch(){
+
+}
+
+MicroSwitch::MicroSwitch(uint8_t pin){
+	_init(pin);
+}
+
+MicroSwitch::~MicroSwitch(){
+
+}
+
+bool MicroSwitch::state(){
+
+	if(!_isInit){
+		return _state;
+	}
+
+	bool current_state = digitalRead(_pin);
+	
+	if(current_state != _state && millis() - _triggerTime > _debouceTime){
+		_state = current_state;
+		_triggerTime = millis();
+	}
+
+	return _state;
+}
+
+void MicroSwitch::initPin(uint8_t pin){
+	_init(pin);
+}
+
+void MicroSwitch::_init(uint8_t pin){
+	_pin = pin;
+	_triggerTime = millis();
+	pinMode(pin, INPUT_PULLUP);
+	_isInit = true;
+}
+
+ElevationAngleSWState::ElevationAngleSWState(uint8_t pinA, uint8_t pinB, uint8_t pinC, uint8_t pinD){
+	_sw[0].initPin(pinA);	
+	_sw[1].initPin(pinB);	
+	_sw[2].initPin(pinC);	
+	_sw[3].initPin(pinD);	
+}
+
+ElevationAngleSWState::~ElevationAngleSWState(){
+
+}
+
+void ElevationAngleSWState::getState(uint8_t *state){
+	for(int i = 0; i< 4; ++i){
+		state[i] = _sw[i].state();
+	}
+}
