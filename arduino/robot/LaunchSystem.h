@@ -1,7 +1,33 @@
-#ifndef BYJ48_DRIVER_H
-#define BYJ48_DRIVER_H
+#ifndef LAUNCH_SYSTEM_H
+#define LAUNCH_SYSTEM_H
 
-#include "Arduino.h"
+#define SWITCH_ON 1
+#define SWITCH_OFF 0
+
+#include <Arduino.h>
+
+#include "I2Cdev.h"
+#include "MPU6050_6Axis_MotionApps20.h"
+
+#define INTERRUPT_PIN 2  // use pin 2 on Arduino Uno & most boards
+
+class IMU{
+	public:
+		IMU();
+		~IMU();
+		void init(MPU6050 *mpu);
+		bool getYPR(float *ypr);
+
+	private:
+		MPU6050 *_mpu;
+		/*---MPU6050 Control/Status Variables---*/
+		bool _DMPReady = false;  // Set true if DMP init was successful
+		uint8_t _MPUIntStatus;   // Holds actual interrupt status byte from MPU
+		uint8_t _devStatus;      // Return status after each device operation (0 = success, !0 = error)
+		uint16_t _packetSize;    // Expected DMP packet size (default is 42 bytes)
+		uint8_t _FIFOBuffer[64]; // FIFO storage buffer
+
+};
 
 namespace byj{
 	enum DIR{
@@ -59,5 +85,31 @@ class BYJ48{
 
 		unsigned long _lastTime = 0;
 }; 
+
+class MicroSwitch{
+	public:
+		MicroSwitch::MicroSwitch();
+		MicroSwitch(uint8_t pin);
+		~MicroSwitch();
+		bool state();
+		void initPin(uint8_t pin);
+
+	private:
+		unsigned long _triggerTime;
+		bool _state = false;
+		uint8_t _pin;
+		unsigned int _debouceTime = 50;
+		bool _isInit = false;
+		void _init(uint8_t pin);
+};
+
+class ElevationAngleSWState{
+	public:
+		ElevationAngleSWState(uint8_t pinA, uint8_t pinB, uint8_t pinC, uint8_t pinD);
+		~ElevationAngleSWState();
+		void getState(uint8_t* state);
+	private:
+		MicroSwitch _sw[4];
+};
 
 #endif
