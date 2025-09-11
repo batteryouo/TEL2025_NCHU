@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(test_communicate)
+project(robot_communicate)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -12,11 +12,19 @@ find_package(sensor_msgs REQUIRED)
 find_package(serial REQUIRED)
 find_package(communicate_msg REQUIRED)
 
-add_executable(test_communicate src/test_communicate.cpp)
-ament_target_dependencies(test_communicate rclcpp sensor_msgs serial communicate_msg)
+include_directories(
+  include
+)
 
-install(TARGETS test_communicate DESTINATION lib/${PROJECT_NAME})
+add_executable(${PROJECT_NAME}_node src/main.cpp src/robot_communicate.cpp src/SerialCommunicate.cpp)
 
+ament_target_dependencies(${PROJECT_NAME}_node rclcpp sensor_msgs serial communicate_msg)
+
+install(TARGETS ${PROJECT_NAME}_node DESTINATION lib/${PROJECT_NAME})
+install(
+  DIRECTORY launch
+  DESTINATION share/${PROJECT_NAME}/launch
+)
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   # the following line skips the linter which checks for copyrights
