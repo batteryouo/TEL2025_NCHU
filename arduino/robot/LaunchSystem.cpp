@@ -265,3 +265,48 @@ void ElevationAngleSWState::getState(uint8_t *state){
 		state[i] = _sw[i].state();
 	}
 }
+
+
+TB6600::TB6600(uint8_t pulsePin, uint8_t directionPin, unsigned int stepsPerRevolution){
+	_pulsePin = pulsePin;
+	_directionPin = directionPin;
+	_stepsPerRevolution = stepsPerRevolution;
+
+	_lastTimeRun = micros();
+
+	pinMode(directionPin, OUTPUT);
+	pinMode(pulsePin, OUTPUT);
+}
+
+TB6600::~TB6600(){
+
+}
+
+void TB6600::setAngle(float angle){
+	_settingStep = (int)((angle/360.0) * _stepsPerRevolution);
+}
+
+void TB6600::run(unsigned long timeStamp){
+	unsigned long currentTime = micros();
+	if(_settingStep == 0 || (currentTime-_lastTimeRun) < timeStamp){
+		return;
+	}
+
+	if(_settingStep > 0){
+		digitalWrite(_directionPin, HIGH);
+		_settingStep--;
+	}
+	else if(_settingStep < 0){
+		digitalWrite(_directionPin, LOW);
+		_settingStep++;
+	}
+
+	digitalWrite(_pulsePin, HIGH);
+	delayMicroseconds(10);
+	digitalWrite(_pulsePin, LOW);
+	_lastTimeRun = currentTime;
+}
+
+int TB6600::getStepAmount(){
+	return _settingStep;
+}
