@@ -123,6 +123,12 @@ size_t cmd::CommandProtocol::_expectPacketSize(cmd::Command_Type inputCommand){
 											// (float)left_up_down_axis(right knob on controller)
 											// (char) launch, (char) mode, (char) open
 			break;
+		case Command_Type::LAUNCH_ANGLE_NORMALIZE:
+			expectSize = HeaderLength + 4; // (float) normalize_angle
+			break;
+		case Command_Type::LAUNCH:
+			expectSize = HeaderLength + 1; // (int) launch
+			break;
 		case Command_Type::None :
 			expectSize = 0;
 			break;
