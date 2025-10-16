@@ -112,4 +112,22 @@ class ElevationAngleSWState{
 		MicroSwitch _sw[4];
 };
 
+class TB6600{
+	public:
+		TB6600(uint8_t pulsePin, uint8_t directionPin, unsigned int stepsPerRevolution = 6400);
+		~TB6600();
+
+		void setAngle(float angle);
+		void run(unsigned long timeStep = 1000);
+		int getStepAmount();
+	private:
+		uint8_t _pulsePin;
+		uint8_t _directionPin;
+		unsigned int _stepsPerRevolution;
+
+		int _settingStep = 0;
+		unsigned long _lastTimeRun = 0;
+
+};
+
 #endif
