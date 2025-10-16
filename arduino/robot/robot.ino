@@ -8,6 +8,8 @@ mec::Mecanum mecanum;
 // MPU6050 mpu;
 // IMU imu;
 SerialCommunicate serialCommunicate(&Serial);
+BYJ48 byj28_left(22, 24, 26, 28);
+BYJ48 byj28_right(30, 32, 34, 36);
 
 bool LED_BLINK_STATE = true;
 
@@ -17,16 +19,19 @@ void setup() {
 	pinMode(13, OUTPUT);
 	digitalWrite(13, LED_BLINK_STATE);
 	Serial.flush();
+
+	// mecanum.movePolar(5, -PI, 0);
+	// delay(5000);
+	// mecanum.movePolar(5, -PI/2, 0);
+	// delay(5000);
+	// mecanum.movePolar(5, PI/2, 0);
+	// delay(5000);
 }
 
 void loop() {
 	// float ypr[3];
 	// imu.getYPR(ypr);
-	// if(tmp_communication()){
-	// 	speed *= 2.5*sqrt(MAX_VX*MAX_VX + MAX_VY*MAX_VY);
-	// 	w *= MAX_W;
-	// 	mecanum.movePolar(speed, angle, w);
-	// }
+
 	vector<uint8_t> readData;
 	cmd::Command_Type command = serialCommunicate.read(readData);
 	if(command == cmd::Command_Type::MOVE_POLAR){

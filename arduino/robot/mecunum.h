@@ -1,17 +1,17 @@
 #ifndef ROBOT_H
 #define ROBOT_H
 
-#define RPWM_OUTPUT_FL 4
-#define LPWM_OUTPUT_FL 3
+#define RPWM_OUTPUT_FL 3
+#define LPWM_OUTPUT_FL 4
 
 #define RPWM_OUTPUT_FR 6
 #define LPWM_OUTPUT_FR 5
 
-#define RPWM_OUTPUT_RL 10
-#define LPWM_OUTPUT_RL 9
+#define RPWM_OUTPUT_RL 9
+#define LPWM_OUTPUT_RL 10
 
-#define RPWM_OUTPUT_RR 12
-#define LPWM_OUTPUT_RR 11
+#define RPWM_OUTPUT_RR 11
+#define LPWM_OUTPUT_RR 12
 
 #define Chassis_LX 0.21 // unit: (m)
 #define Chassis_LY 0.19 // unit: (m)
