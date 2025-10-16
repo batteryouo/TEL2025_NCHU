@@ -19,6 +19,8 @@ enum Command_Type{
 	MOVE_POLAR,
 	IMU_YPR,
 	SWITCH_STATE,
+	LAUNCH_ANGLE_NORMALIZE,
+	LAUNCH,
 	RC,
 	None
 };
