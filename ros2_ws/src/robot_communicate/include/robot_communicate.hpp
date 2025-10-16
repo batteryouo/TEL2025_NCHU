@@ -8,6 +8,8 @@
 #include "serial/serial.h"
 
 #include "SerialCommunicate.h"
+#include "communicate_msg/msg/mecanum.hpp"
+#include "communicate_msg/msg/imu.hpp"
 
 class SerialObj: public rclcpp::Node{
 	public:
@@ -21,8 +23,10 @@ class SerialObj: public rclcpp::Node{
 		rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr _subscription;
 
 		void _joy_callback(const sensor_msgs::msg::Joy::SharedPtr msg);
-		// rclcpp::TimerBase::SharedPtr timer_;
-		// rclcpp::Publisher<communicate_msg::msg::Mecanum>::SharedPtr publisher_; 
+		void _timer_callback();
+		rclcpp::TimerBase::SharedPtr timer_;
+		rclcpp::Publisher<communicate_msg::msg::Mecanum>::SharedPtr publisher_;
+		rclcpp::Publisher<communicate_msg::msg::Imu>::SharedPtr _imuPublisher;
 
 		SerialCommunicate serialCommunicate;
 
