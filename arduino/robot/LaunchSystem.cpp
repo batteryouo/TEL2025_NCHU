@@ -310,3 +310,8 @@ void TB6600::run(unsigned long timeStamp){
 int TB6600::getStepAmount(){
 	return _settingStep;
 }
+
+void TB6600::reset(){
+	_settingStep = 0;
+	_lastTimeRun = 0;
+}

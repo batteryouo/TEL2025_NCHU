@@ -31,13 +31,13 @@ void loop(){
 		data.push_back(tmp_data[i]);
 	}
 
-	value = normalized_SBUS2Serial( sbus.getNormalizedChannel(4) ); // right_left_right_aixs
+	value = normalized_SBUS2Serial( sbus.getNormalizedChannel(4) ); // left_left_right_aixs
 	float2uint8_t(value, tmp_data);
 	for(int i = 0; i< 4; ++i){
 		data.push_back(tmp_data[i]);
 	}
 	
-	value = normalized_SBUS2Serial( sbus.getNormalizedChannel(8) ); // right_up_down_aixs
+	value = normalized_SBUS2Serial( sbus.getNormalizedChannel(8) ); // left_up_down_aixs(knob)
 	float2uint8_t(value, tmp_data);
 	for(int i = 0; i< 4; ++i){
 		data.push_back(tmp_data[i]);
@@ -53,7 +53,7 @@ void loop(){
 	}
 	data.push_back(launch);
 
-	value = normalized_SBUS2Serial( sbus.getNormalizedChannel(5) ); // mode
+	value = normalized_SBUS2Serial( sbus.getNormalizedChannel(8) ); // mode
 	uint8_t mode = 0;
 	if(value > 0.9){
 		mode = 0;
@@ -78,7 +78,7 @@ void loop(){
 	data.push_back(is_start);	
 
 	serialCommunicate.write(data, cmd::Command_Type::RC);
-	
+
 	delay(50);
 }
 

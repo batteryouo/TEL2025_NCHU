@@ -24,6 +24,7 @@ cmd::CommandProtocol::~CommandProtocol(){
 }
 
 bool cmd::CommandProtocol::packetValid(const vector<uint8_t> &packet){
+
 	if(packet.size() < HeaderLength){
 		return false;
 	}
@@ -42,7 +43,7 @@ bool cmd::CommandProtocol::packetValid(const vector<uint8_t> &packet){
 		inputData.push_back(packet[i]);
 	}
 	_computeCheckSum(packet[HEADER_INFO::Packet_SIZE], (Command_Type)packet[HEADER_INFO::Command], inputData, checkSum1, checkSum2);
-
+	
 	if(checkSum1 != packet[HEADER_INFO::CheckSum_1] || checkSum2 != packet[HEADER_INFO::CheckSum_2]){
 		return false;
 	}
@@ -156,7 +157,6 @@ cmd::Command_Type SerialCommunicate::read(vector<uint8_t> &outputData){
 	cmd::Command_Type returnCMD = cmd::Command_Type::None;
 
 	while(_serial->available()){
-		
 		char c = _serial->read();
 
 		_packet.push_back(c);

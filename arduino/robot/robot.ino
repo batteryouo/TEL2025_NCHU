@@ -3,58 +3,73 @@
 #include "mecunum.h"
 #include "LaunchSystem.h"
 #include "SerialCommunicate.h"
-
+#include "PID.h"
 mec::Mecanum mecanum;
-// MPU6050 mpu;
-// IMU imu;
+MPU6050 mpu;
+IMU imu;
 SerialCommunicate serialCommunicate(&Serial);
 BYJ48 byj28_left(22, 24, 26, 28);
-BYJ48 byj28_right(30, 32, 34, 36);
+BYJ48 byj28_right(23, 25, 27, 29);
+TB6600 tb6600(37, 36);
+
+PID launch_angle_PID(2, 0, 0.2, 0.2);
 
 bool LED_BLINK_STATE = true;
+float launch_angle = 0;
+
+template <class _T>
+_T uint8Vector2Value(vector<uint8_t> data, int bias){
+	uint8_t tmp_num[sizeof(_T)];
+	for(int i = 0; i< sizeof(_T); ++i){
+		tmp_num[i] = data[i + bias];
+	}
+	return ((_T *)tmp_num)[0];
+}
 
 void setup() {
 	serialCommunicate.init();
-	// imu.init(&mpu);
+	imu.init(&mpu);
+	tb6600.reset();
 	pinMode(13, OUTPUT);
 	digitalWrite(13, LED_BLINK_STATE);
 	Serial.flush();
-
-	// mecanum.movePolar(5, -PI, 0);
-	// delay(5000);
-	// mecanum.movePolar(5, -PI/2, 0);
-	// delay(5000);
-	// mecanum.movePolar(5, PI/2, 0);
-	// delay(5000);
+	
 }
 
 void loop() {
-	// float ypr[3];
-	// imu.getYPR(ypr);
+	float ypr[3];
+	imu.getYPR(ypr);
 
 	vector<uint8_t> readData;
 	cmd::Command_Type command = serialCommunicate.read(readData);
+
 	if(command == cmd::Command_Type::MOVE_POLAR){
 		float speed, angle, w;
-		uint8_t tmp_num[4];
-		for(int i = 0; i< 4; ++i){
-			tmp_num[i] = readData[i];
-		}
-		speed = ((float*)tmp_num)[0];
+		
+		speed = uint8Vector2Value<float>(readData, 0);
 		speed *= 2.5*sqrt(MAX_VX*MAX_VX + MAX_VY*MAX_VY);
 
-		for(int i = 0; i< 4; ++i){
-			tmp_num[i] = readData[i + 4];
-		}
-		angle = ((float*)tmp_num)[0];
+		angle = uint8Vector2Value<float>(readData, 4);
 		
-		for(int i = 0; i< 4; ++i){
-			tmp_num[i] = readData[i + 8];
-		}
-		w = ((float*)tmp_num)[0];
+		w = uint8Vector2Value<float>(readData, 8);
 		w *= MAX_W;
 
 		mecanum.movePolar(speed, angle, w);
+
 	}
+
+	if(command == cmd::Command_Type::LAUNCH_ANGLE_NORMALIZE){
+		launch_angle = uint8Vector2Value<float>(readData, 0) * MAX_LAUNCH_ANGLE;
+	}
+
+	if(command == cmd::Command_Type::LAUNCH && tb6600.getStepAmount() == 0){
+		tb6600.setAngle(52);
+	}
+
+	tb6600.run(2000);
+
+	float byj_speed = launch_angle_PID.calculatePID(launch_angle - ypr[0]);
+	byj28_left.run(byj_speed);
+	byj28_right.run(byj_speed);
 
 }

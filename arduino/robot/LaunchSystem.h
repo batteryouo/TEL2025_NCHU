@@ -4,6 +4,8 @@
 #define SWITCH_ON 1
 #define SWITCH_OFF 0
 
+#define MAX_LAUNCH_ANGLE 1.21
+
 #include <Arduino.h>
 
 #include "I2Cdev.h"
@@ -120,6 +122,7 @@ class TB6600{
 		void setAngle(float angle);
 		void run(unsigned long timeStep = 1000);
 		int getStepAmount();
+		void reset();
 	private:
 		uint8_t _pulsePin;
 		uint8_t _directionPin;
