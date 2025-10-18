@@ -53,7 +53,7 @@ void loop(){
 	}
 	data.push_back(launch);
 
-	value = normalized_SBUS2Serial( sbus.getNormalizedChannel(8) ); // mode
+	value = normalized_SBUS2Serial( sbus.getNormalizedChannel(5) ); // mode
 	uint8_t mode = 0;
 	if(value > 0.9){
 		mode = 0;

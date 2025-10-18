@@ -1,5 +1,5 @@
 #include "PID.h"
-
+#include <Arduino.h>
 PID::PID(float p, float i, float d, float maxErrorCum):_p(p), _i(i), _d(d){
 	_maxErrorCum = fabs(maxErrorCum);
 }

@@ -12,7 +12,7 @@ BYJ48 byj28_left(22, 24, 26, 28);
 BYJ48 byj28_right(23, 25, 27, 29);
 TB6600 tb6600(37, 36);
 
-PID launch_angle_PID(2, 0, 0.2, 0.2);
+PID launch_angle_PID(2, 0, 0, 0.2);
 
 bool LED_BLINK_STATE = true;
 float launch_angle = 0;
@@ -32,6 +32,7 @@ void setup() {
 	tb6600.reset();
 	pinMode(13, OUTPUT);
 	digitalWrite(13, LED_BLINK_STATE);
+	Serial.println("start!");
 	Serial.flush();
 	
 }
@@ -63,13 +64,19 @@ void loop() {
 	}
 
 	if(command == cmd::Command_Type::LAUNCH && tb6600.getStepAmount() == 0){
-		tb6600.setAngle(52);
+		if(readData[0] != 0){
+			tb6600.setAngle(52);
+		}
 	}
 
 	tb6600.run(2000);
 
 	float byj_speed = launch_angle_PID.calculatePID(launch_angle - ypr[0]);
+
+	if(fabs(byj_speed)< 0.05){
+		byj_speed = 0;
+	}
 	byj28_left.run(byj_speed);
 	byj28_right.run(byj_speed);
-
+	
 }
