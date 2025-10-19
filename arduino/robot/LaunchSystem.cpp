@@ -168,7 +168,7 @@ void IMU::init(MPU6050 *mpu){
 	_devStatus = _mpu->dmpInitialize();
 	_mpu->CalibrateGyro(15);
 	_mpu->CalibrateAccel(15);
-	// mpu.PrintActiveOffsets();
+	_mpu->PrintActiveOffsets();
 
 	// make sure it worked (returns 0 if so)
 	if (_devStatus == 0) {
@@ -309,4 +309,9 @@ void TB6600::run(unsigned long timeStamp){
 
 int TB6600::getStepAmount(){
 	return _settingStep;
+}
+
+void TB6600::reset(){
+	_settingStep = 0;
+	_lastTimeRun = 0;
 }
