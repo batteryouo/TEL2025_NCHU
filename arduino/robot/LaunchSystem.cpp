@@ -249,11 +249,9 @@ void MicroSwitch::_init(uint8_t pin){
 	_isInit = true;
 }
 
-ElevationAngleSWState::ElevationAngleSWState(uint8_t pinA, uint8_t pinB, uint8_t pinC, uint8_t pinD){
+ElevationAngleSWState::ElevationAngleSWState(uint8_t pinA, uint8_t pinB){
 	_sw[0].initPin(pinA);	
 	_sw[1].initPin(pinB);	
-	_sw[2].initPin(pinC);	
-	_sw[3].initPin(pinD);	
 }
 
 ElevationAngleSWState::~ElevationAngleSWState(){
@@ -261,7 +259,7 @@ ElevationAngleSWState::~ElevationAngleSWState(){
 }
 
 void ElevationAngleSWState::getState(uint8_t *state){
-	for(int i = 0; i< 4; ++i){
+	for(int i = 0; i< 2; ++i){
 		state[i] = _sw[i].state();
 	}
 }
@@ -314,4 +312,41 @@ int TB6600::getStepAmount(){
 void TB6600::reset(){
 	_settingStep = 0;
 	_lastTimeRun = 0;
+}
+
+AngleReader::AngleReader(uint8_t pin, int bias, int maxValue){
+	_pin = pin;
+	_bias = bias;
+	_maxValue = maxValue;
+
+	pinMode(_pin, INPUT);
+}
+
+AngleReader::~AngleReader(){
+
+}
+
+float AngleReader::readNormalized(){
+	int rawValue = analogRead(_pin);
+	float normalizedValue = ((float)(rawValue - _bias)) / ((float)_maxValue - _bias);
+	
+	return normalizedValue;
+}
+
+int AngleReader::read(){
+	int rawValue = analogRead(_pin);
+	return (float)(rawValue);
+}
+
+void AngleReader::setPin(uint8_t pin){
+	_pin = pin;
+	pinMode(_pin, INPUT);
+}
+
+void AngleReader::setBias(int bias){
+	_bias = bias;
+}
+
+void AngleReader::setMaxValue(int maxValue){
+	_maxValue = maxValue;
 }

@@ -107,11 +107,11 @@ class MicroSwitch{
 
 class ElevationAngleSWState{
 	public:
-		ElevationAngleSWState(uint8_t pinA, uint8_t pinB, uint8_t pinC, uint8_t pinD);
+		ElevationAngleSWState(uint8_t pinA, uint8_t pinB);
 		~ElevationAngleSWState();
 		void getState(uint8_t* state);
 	private:
-		MicroSwitch _sw[4];
+		MicroSwitch _sw[2];
 };
 
 class TB6600{
@@ -130,6 +130,22 @@ class TB6600{
 
 		int _settingStep = 0;
 		unsigned long _lastTimeRun = 0;
+
+};
+
+class AngleReader{
+	public:
+		AngleReader(uint8_t pin = A0, int bias = 0, int maxValue = 1023);
+		~AngleReader();
+		float readNormalized();
+		int read();
+		void setPin(uint8_t pin);
+		void setBias(int bias);
+		void setMaxValue(int maxValue);
+	private:
+		uint8_t _pin = A0;
+		int _bias = 0;
+		int _maxValue = 1023;
 
 };
 
