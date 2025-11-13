@@ -30,6 +30,12 @@ _T uint8Vector2Value(vector<uint8_t> data, int bias){
 	return ((_T *)tmp_num)[0];
 }
 
+void float2uint8_t(float num, uint8_t *outputArray){
+	for(int i = 0; i< 4; ++i){
+		outputArray[i] = ((uint8_t *)&num)[i];
+	}
+}
+
 void setup() {
 	serialCommunicate.init();
 	// imu.init(&mpu);
@@ -42,6 +48,14 @@ void setup() {
 	int _bias = 0;
 	int _maxValue = 1023;
 
+	// tb6600.setAngle(60);
+	// while(tb6600.getStepAmount()){
+	// 	tb6600.run(1000);
+	// 	if(!tb6600.getStepAmount()){
+	// 		tb6600.setAngle(60);
+	// 	}
+	// }
+	
 	uint8_t state[2];
 	elevationAngleSWState.getState(state);
 	while(state[1] == SWITCH_OFF){
@@ -101,7 +115,24 @@ void loop() {
 	}
 	tb6600.run(2000);
 
-	float byj_speed = launch_angle_PID.calculatePID(launch_angle - angleReader.readNormalized());
+	float readAngle = angleReader.readNormalized();
+	float byj_speed = launch_angle_PID.calculatePID(launch_angle - readAngle);
+	
+	uint8_t tmp[4] = {0};
+	vector<uint8_t> readAngle_vector;
+
+	float2uint8_t(readAngle, tmp);
+	for(int i = 0; i< 4; ++i){
+		readAngle_vector.push_back(tmp[i]);
+	}
+	float2uint8_t(0, tmp);
+	for(int i = 0; i< 4; ++i){
+		readAngle_vector.push_back(tmp[i]);
+	}
+	for(int i = 0; i< 4; ++i){
+		readAngle_vector.push_back(tmp[i]);
+	}
+	serialCommunicate.write(readAngle_vector, cmd::Command_Type::IMU_YPR);
 
 	if(fabs(byj_speed)< 0.05){
 		byj_speed = 0;
