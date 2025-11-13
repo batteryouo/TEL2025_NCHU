@@ -45,13 +45,13 @@ ros2 run at9s at9s_node
 ```
 or you can use:
 ```bash
-ros2 launch at9s at9s.py port:=<your_serial_port>
+ros2 launch at9s at9s_launch.py port:=<your_serial_port>
 ```
 
 ### Notes:
 1. The defualt serial port is `/dev/ttyACM1`. You can change it by modifying the `port` parameter in the `at9s_node` executable.
 2. The baudrate is set to `115200`. You cannot change it in the current version.
-
+3. If package not found, run: `cd ~/ros2_ws && source install/setup.bash`
 ---
 ### robot_communicate
 This directory contains the code and resources for communicating with the robot via serial communication.
@@ -62,11 +62,19 @@ ros2 run robot_communicate robot_communicate_node
 ```
 or you can use:
 ```bash
-ros2 launch robot_communicate robot_communicate.py port:=<your_serial_port>
+ros2 launch robot_communicate robot_communicate_launch.py port:=<your_serial_port>
 ```
 ### Notes:
 1. The defualt serial port is `/dev/ttyACM0`. You can change it by modifying the `port` parameter in the `robot_communicate_node` executable.
 2. The baudrate is set to `115200`. You cannot change it in the current version.
+3. If package not found, run: `cd ~/ros2_ws && source install/setup.bash`
+---
+### RealSense Camera
+To be added in the future.
+
+---
+### Object Detection
+To be added in the future.
 
 ---
 ## Arduino
@@ -80,9 +88,9 @@ Dependencies of AT9S:
 # SBUS
 git clone https://github.com/batteryouo/SBUS.git
 ```
-
-
-### Baseball_Robot
-The `Baseball_Robot` folder contains the Arduino code for controlling the baseball robot. It
-receives commands from the ROS2 node via serial communication and controls the robot accordingly.
-Upload the code to your Arduino board using the Arduino IDE or PlatformIO.
+### Robot Control
+The `robot_control` folder contains the Arduino code for controlling the baseball robot based on commands received from the ROS2 node via serial communication.
+```bash
+# MPU6050
+git clone https://github.com/batteryouo/mpu6050.git
+```
