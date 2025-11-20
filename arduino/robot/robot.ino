@@ -77,12 +77,10 @@ void setup() {
 }
 
 void loop() {
-	// float ypr[3];
-	// imu.getYPR(ypr);
 
 	vector<uint8_t> readData;
 	cmd::Command_Type command = serialCommunicate.read(readData);
-
+	// process command
 	if(command == cmd::Command_Type::MOVE_POLAR){
 		float speed = 0;
 		float angle = 0;
@@ -115,27 +113,12 @@ void loop() {
 		digitalWrite(LED_BUILTIN, LED_BLINK_STATE);
 		reset_timer = micros();
 	}
+	// process launch system
 	tb6600.run(2000);
 
 	float readAngle = angleReader.readNormalized();
 	float byj_speed = launch_angle_PID.calculatePID(launch_angle - readAngle);
 	
-	uint8_t tmp[4] = {0};
-	vector<uint8_t> readAngle_vector;
-
-	float2uint8_t(readAngle, tmp);
-	for(int i = 0; i< 4; ++i){
-		readAngle_vector.push_back(tmp[i]);
-	}
-	float2uint8_t(0, tmp);
-	for(int i = 0; i< 4; ++i){
-		readAngle_vector.push_back(tmp[i]);
-	}
-	for(int i = 0; i< 4; ++i){
-		readAngle_vector.push_back(tmp[i]);
-	}
-	serialCommunicate.write(readAngle_vector, cmd::Command_Type::IMU_YPR);
-
 	if(fabs(byj_speed)< 0.05){
 		byj_speed = 0;
 	}
@@ -145,6 +128,29 @@ void loop() {
 		byj_speed = 0;
 	}
 	byj28_left.run(byj_speed);
-	// byj28_right.run(byj_speed);
+
+	// send data back
+	uint8_t tmp[4] = {0};
+	vector<uint8_t> readAngle_vector;
+
+	float2uint8_t(readAngle, tmp);
+	for(int i = 0; i< 4; ++i){
+		readAngle_vector.push_back(tmp[i]);
+	}
+	for(int i = 0; i< 8; ++i){
+		readAngle_vector.push_back( (uint8_t)0 );
+	}
+	serialCommunicate.write(readAngle_vector, cmd::Command_Type::IMU_YPR);
+
+	if(tb6600.getStepAmount() == 0){
+		vector<uint8_t> launch_state_vector;
+		launch_state_vector.push_back((uint8_t)0);
+		serialCommunicate.write(launch_state_vector, cmd::Command_Type::LAUNCH);
+	}
+	else{
+		vector<uint8_t> launch_state_vector;
+		launch_state_vector.push_back((uint8_t)1);
+		serialCommunicate.write(launch_state_vector, cmd::Command_Type::LAUNCH);
+	}
 	
 }
