@@ -84,7 +84,9 @@ void loop() {
 	cmd::Command_Type command = serialCommunicate.read(readData);
 
 	if(command == cmd::Command_Type::MOVE_POLAR){
-		float speed, angle, w;
+		float speed = 0;
+		float angle = 0;
+		float w = 0;
 		
 		speed = uint8Vector2Value<float>(readData, 0);
 		speed *= 4*sqrt(MAX_VX*MAX_VX + MAX_VY*MAX_VY);

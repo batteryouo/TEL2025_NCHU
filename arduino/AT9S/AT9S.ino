@@ -76,9 +76,10 @@ void loop(){
 		is_start = 1;
 	}
 	data.push_back(is_start);	
-
-	serialCommunicate.write(data, cmd::Command_Type::RC);
-
+	if(is_start){
+		serialCommunicate.write(data, cmd::Command_Type::RC);
+	}
+	
 	delay(50);
 }
 
