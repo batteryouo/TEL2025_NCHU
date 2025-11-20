@@ -48,14 +48,6 @@ void setup() {
 	int _bias = 0;
 	int _maxValue = 1023;
 
-	// tb6600.setAngle(60);
-	// while(tb6600.getStepAmount()){
-	// 	tb6600.run(1000);
-	// 	if(!tb6600.getStepAmount()){
-	// 		tb6600.setAngle(60);
-	// 	}
-	// }
-	
 	uint8_t state[2];
 	elevationAngleSWState.getState(state);
 	while(state[1] == SWITCH_OFF){
