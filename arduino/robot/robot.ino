@@ -14,12 +14,13 @@ TB6600 tb6600(37, 36);
 ElevationAngleSWState elevationAngleSWState(30, 32);
 AngleReader angleReader(A0, 0, 1023);
 
-PID launch_angle_PID(1, 0, 0.1, 0.2);
+PID launch_angle_PID(1.3, 0.001, 0.05, 0.2);
 
 bool LED_BLINK_STATE = true;
 float launch_angle = 0;
 
 unsigned long reset_timer = 0;
+unsigned long last_publish = 0;
 
 template <class _T>
 _T uint8Vector2Value(vector<uint8_t> data, int bias){
@@ -66,6 +67,7 @@ void setup() {
 	byj28_right.stop();
 	angleReader.setBias(_bias);
 	angleReader.setMaxValue(_maxValue);
+	last_publish = millis();
 }
 
 void loop() {
@@ -124,7 +126,7 @@ void loop() {
 	// send data back
 	uint8_t tmp[4] = {0};
 	vector<uint8_t> readAngle_vector;
-
+	vector<uint8_t> launch_state_vector;
 	float2uint8_t(readAngle, tmp);
 	for(int i = 0; i< 4; ++i){
 		readAngle_vector.push_back(tmp[i]);
@@ -132,17 +134,20 @@ void loop() {
 	for(int i = 0; i< 8; ++i){
 		readAngle_vector.push_back( (uint8_t)0 );
 	}
-	serialCommunicate.write(readAngle_vector, cmd::Command_Type::IMU_YPR);
 
-	if(tb6600.getStepAmount() == 0){
-		vector<uint8_t> launch_state_vector;
-		launch_state_vector.push_back((uint8_t)0);
-		serialCommunicate.write(launch_state_vector, cmd::Command_Type::LAUNCH);
+	unsigned long current_time = millis();
+	if(current_time - last_publish >= 20){
+		serialCommunicate.write(readAngle_vector, cmd::Command_Type::IMU_YPR);
+
+		if(tb6600.getStepAmount() == 0){
+			
+			launch_state_vector.push_back((uint8_t)0);
+			serialCommunicate.write(launch_state_vector, cmd::Command_Type::LAUNCH);
+		}
+		else{
+			launch_state_vector.push_back((uint8_t)1);
+			serialCommunicate.write(launch_state_vector, cmd::Command_Type::LAUNCH);
+		}
+		last_publish = current_time;
 	}
-	else{
-		vector<uint8_t> launch_state_vector;
-		launch_state_vector.push_back((uint8_t)1);
-		serialCommunicate.write(launch_state_vector, cmd::Command_Type::LAUNCH);
-	}
-	
 }
