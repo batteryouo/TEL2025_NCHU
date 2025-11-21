@@ -180,34 +180,37 @@ cmd::Command_Type SerialCommunicate::read(std::vector<uint8_t> &outputData){
 	if(_ser.available()){
 		
 		std::string readString = _ser.read(_ser.available());
-		_input = readString;
-		uint8_t c;
-		int _i = 0;
-		for(_i = 0; _i< _input.size(); ++_i){
-			c = _input[_i];
-			_packet.push_back(c);
-			
-			bool startFlag = _startFlag();
-			if(!startFlag){
-				_packet.clear();
-				continue;
-			}
-
-			if(_packet.size() >= HEADER_INFO::Packet_SIZE + 1 && _packet.size() != _packet[HEADER_INFO::Packet_SIZE]){
-				continue;
-			}
-			else if(parsePacket(_packet)){
-				outputData = data();
-				returnCMD = command();
-				_packet.clear();
-				break;
-			}
-
-			if(_packet.size() > MAX_BUFFER_SIZE){
-				_packet.clear();
-				break;
-			}
+		
+		_input += readString;
+		// _input = readString;	
+		
+	}
+	uint8_t c;
+	int _i = 0;
+	for(_i = 0; _i< _input.size(); ++_i){	
+		c = _input[_i];
+		_packet.push_back(c);
+		
+		bool startFlag = _startFlag();
+		if(!startFlag){
+			_packet.clear();
+			continue;
 		}
+		if(_packet.size() >= HEADER_INFO::Packet_SIZE + 1 && _packet.size() != _packet[HEADER_INFO::Packet_SIZE]){
+			continue;
+		}
+		else if(parsePacket(_packet)){
+			outputData = data();
+			returnCMD = command();
+			_packet.clear();
+			break;
+		}
+		if(_packet.size() > MAX_BUFFER_SIZE){
+			_packet.clear();
+			break;
+		}
+	}
+	if(_input.size() >= 0){
 		_input.erase(0, _i+1);
 	}
 	return returnCMD;

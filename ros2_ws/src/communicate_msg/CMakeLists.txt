@@ -11,7 +11,7 @@ find_package(std_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
-	"msg/Mecanum.msg" "msg/Imu.msg"
+	"msg/Mecanum.msg" "msg/Imu.msg" "msg/Int32.msg"
 	DEPENDENCIES builtin_interfaces std_msgs
 )
 

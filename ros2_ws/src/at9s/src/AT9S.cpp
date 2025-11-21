@@ -28,7 +28,6 @@ AT9S::~AT9S(){
 void AT9S::_timer_callback(){
     std::vector<uint8_t> data;
     cmd::Command_Type command = _serialCommunicate.read(data);
-
     if(command == cmd::Command_Type::RC){ 
 
         uint8_t num[4] = {0};
@@ -58,13 +57,14 @@ void AT9S::_timer_callback(){
         launch = 1 - (int)data[16]; // convert launch to 1
         mode = (int)data[17];
         start = (int)data[18];
-
+		
         sensor_msgs::msg::Joy joy_msg;
         joy_msg.header.stamp = this->get_clock()->now();  // Timestamp
         joy_msg.header.frame_id = "joy_frame";            // Optional frame ID
         joy_msg.axes = {vx, vy, w, knob};
         joy_msg.buttons = {launch, mode, start};
-
-        publisher_->publish(joy_msg);
+        
+	publisher_->publish(joy_msg);
+        std::cout << ": publish succesfully!\n";
     }
 }
