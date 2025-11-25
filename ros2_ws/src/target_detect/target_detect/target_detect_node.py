@@ -8,16 +8,7 @@ import message_filters
 
 import cv2
 import numpy as np
-# x_global = 0
-# y_global = 0
 
-# def mouse_callback(event, x, y, flags, param):
-#     global x_global, y_global
-
-#     if x is not None:
-#         x_global = x
-#     if y is not None:
-#         y_global = y
 
 cv2.namedWindow("img")
 # cv2.setMouseCallback("img", mouse_callback)

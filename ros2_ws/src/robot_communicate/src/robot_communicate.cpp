@@ -11,7 +11,7 @@
 #include "robot_communicate.hpp"
 using namespace std::chrono_literals;
 
-bool restart_flag = false;
+
 
 float uint8Vector2Float(std::vector<uint8_t> data, int bias = 0){
 	uint8_t num[4] = {0};
@@ -22,8 +22,10 @@ float uint8Vector2Float(std::vector<uint8_t> data, int bias = 0){
 }
 
 SerialObj::SerialObj():Node("test_serial_node"){
-	_subscription = this->create_subscription<sensor_msgs::msg::Joy>("joy", 10,	
+	_joy_subscription = this->create_subscription<sensor_msgs::msg::Joy>("joy", 10,	
 		std::bind(&SerialObj::_joy_callback, this, std::placeholders::_1) );
+	_move_subscription = this->create_subscription<communicate_msg::msg::Mecanum>("/move", 10,
+		std::bind(&SerialObj::_move_callback, this, std::placeholders::_1));
 	
 	_imuPublisher = this->create_publisher<communicate_msg::msg::Imu>("launch_imu", 10);
 	_launchPublisher = this->create_publisher<communicate_msg::msg::Int32>("launch", 10);
@@ -125,4 +127,26 @@ void SerialObj::_joy_callback(const sensor_msgs::msg::Joy::SharedPtr msg){
 
 	}
 	
+}
+
+void _move_callback(const communicate_msg::msg::Mecanum::SharedPtr msg){
+	float speed = msg->speed;
+	float theta = msg->angle;
+	float w = msg->w;
+
+	std::vector<uint8_t> data;
+	for(int i = 0; i< 4; ++i){
+		uint8_t tmp = ((uint8_t *)&speed)[i];
+		data.push_back(tmp);
+	}
+	for(int i = 0; i< 4; ++i){
+		uint8_t tmp = ((uint8_t *)&theta)[i];
+		data.push_back(tmp);
+	}
+	for(int i = 0; i< 4; ++i){
+		uint8_t tmp = ((uint8_t *)&w)[i];
+		data.push_back(tmp);
+	}
+
+	serialCommunicate.write(data, cmd::Command_Type::MOVE_POLAR);
 }
