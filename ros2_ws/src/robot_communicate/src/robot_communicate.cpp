@@ -28,6 +28,8 @@ SerialObj::SerialObj():Node("test_serial_node"){
 		std::bind(&SerialObj::_move_callback, this, std::placeholders::_1));
 	_launch_subscription = this->create_subscription<communicate_msg::msg::Int32>("auto_launch", 10,
 		std::bind(&SerialObj::_launch_callback, this, std::placeholders::_1));
+	_launch_angle_subscription = this->create_subscription<communicate_msg::msg::Imu>("auto_launch_angle", 10,
+		std::bind(&SerialObj::_launch_angle_callback, this, std::placeholders::_1)); 
 	
 	_imuPublisher = this->create_publisher<communicate_msg::msg::Imu>("launch_imu", 10);
 	_launchPublisher = this->create_publisher<communicate_msg::msg::Int32>("launch", 10);
@@ -131,7 +133,7 @@ void SerialObj::_joy_callback(const sensor_msgs::msg::Joy::SharedPtr msg){
 	
 }
 
-void _move_callback(const communicate_msg::msg::Mecanum::SharedPtr msg){
+void SerialObj::_move_callback(const communicate_msg::msg::Mecanum::SharedPtr msg){
 	float speed = msg->speed;
 	float theta = msg->angle;
 	float w = msg->w;
@@ -153,9 +155,22 @@ void _move_callback(const communicate_msg::msg::Mecanum::SharedPtr msg){
 	serialCommunicate.write(data, cmd::Command_Type::MOVE_POLAR);
 }
 
-void _launch_callback(const communicate_msg::msg::Int32::SharedPtr msg){
+void SerialObj::_launch_callback(const communicate_msg::msg::Int32::SharedPtr msg){
 	std::vector<uint8_t> data;
 	int32_t launch = msg->data;
 	data.push_back((uint8_t)launch);
 	serialCommunicate.write(data, cmd::Command_Type::LAUNCH);	
+}
+
+void SerialObj::_launch_angle_callback(const communicate_msg::msg::Imu::SharedPtr msg){
+	
+	std::vector<uint8_t> data;
+	float knob = msg->y;
+	
+	for(int i = 0; i< 4; ++i){
+		// knob data has already normalized to 0~1
+		uint8_t tmp = ((uint8_t*)&knob)[i];
+		data.push_back(tmp);
+	}
+	serialCommunicate.write(data, cmd::Command_Type::LAUNCH_ANGLE_NORMALIZE);	
 }
