@@ -33,6 +33,7 @@ SerialObj::SerialObj():Node("test_serial_node"){
 	
 	_imuPublisher = this->create_publisher<communicate_msg::msg::Imu>("launch_imu", 10);
 	_launchPublisher = this->create_publisher<communicate_msg::msg::Int32>("launch", 10);
+	_modePublisher = this->create_publisher<communicate_msg::msg::Int32>("mode", 10);
 	timer_ = this->create_wall_timer(1ms, std::bind(&SerialObj::_timer_callback, this)) ;
 	
 	this->declare_parameter("port", "/dev/ttyACM0");
@@ -128,6 +129,13 @@ void SerialObj::_joy_callback(const sensor_msgs::msg::Joy::SharedPtr msg){
 		data.clear();
 		data.push_back((uint8_t)launch);
 		serialCommunicate.write(data, cmd::Command_Type::LAUNCH);
+
+		communicate_msg::msg::Int32 mode_data;
+		mode_data.data = mode
+		mode_data.header.stamp = this->get_clock()->now();
+		mode_data.header.frame_id = "mode";
+
+		_modePublisher->publish(mode_data);
 
 	}
 	

@@ -34,6 +34,7 @@ class SerialObj: public rclcpp::Node{
 		rclcpp::TimerBase::SharedPtr timer_;
 		rclcpp::Publisher<communicate_msg::msg::Imu>::SharedPtr _imuPublisher;
 		rclcpp::Publisher<communicate_msg::msg::Int32>::SharedPtr _launchPublisher;
+		rclcpp::Publisher<communicate_msg::msg::Int32>::SharedPtr _modePublisher;
 
 		SerialCommunicate serialCommunicate;
 		bool restart_flag = false;
