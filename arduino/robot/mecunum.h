@@ -19,7 +19,7 @@
 
 #define MAX_VX 1 // unit: (m/s)
 #define MAX_VY 1 // unit: (m/s)
-#define MAX_W 8 // unit: (rad/s)
+#define MAX_W 4 // unit: (rad/s)
 
 
 namespace mec{
