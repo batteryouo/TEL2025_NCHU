@@ -70,11 +70,22 @@ ros2 launch robot_communicate robot_communicate_launch.py port:=<your_serial_por
 3. If package not found, run: `cd ~/ros2_ws && source install/setup.bash`
 ---
 ### RealSense Camera
-To be added in the future.
+You can open the RealSense Camera with
+```bash
+ros2 launch realsense2_camera rs_launch
+```
 
 ---
 ### Object Detection
 To be added in the future.
+---
+### Data Collection
+It will collect the image, and angle data.
+```bash
+ros2 run data_collect launch_info_collect_node
+```
+After trigger the launch, this node starting record data.
+The result in ~/realsensRaw/
 
 ---
 ## Arduino
