@@ -7,8 +7,11 @@
 
 #include "communicate_msg/msg/mecanum.hpp"
 #include "communicate_msg/msg/imu.hpp"
+#include "communicate_msg/msg/int32.hpp"
 #include "robot_communicate.hpp"
 using namespace std::chrono_literals;
+
+bool restart_flag = false;
 
 float uint8Vector2Float(std::vector<uint8_t> data, int bias = 0){
 	uint8_t num[4] = {0};
@@ -23,8 +26,9 @@ SerialObj::SerialObj():Node("test_serial_node"){
 		std::bind(&SerialObj::_joy_callback, this, std::placeholders::_1) );
 	
 	_imuPublisher = this->create_publisher<communicate_msg::msg::Imu>("launch_imu", 10);
-	timer_ = this->create_wall_timer(10ms, std::bind(&SerialObj::_timer_callback, this)) ;
-
+	_launchPublisher = this->create_publisher<communicate_msg::msg::Int32>("launch", 10);
+	timer_ = this->create_wall_timer(1ms, std::bind(&SerialObj::_timer_callback, this)) ;
+	
 	this->declare_parameter("port", "/dev/ttyACM0");
 	_port = this->get_parameter("port").as_string();
 
@@ -43,9 +47,10 @@ void SerialObj::_timer_callback(){
 		communicate_msg::msg::Imu launch_imu;
 		float y, p, r;
 		y = uint8Vector2Float(data, 0);
-		p = uint8Vector2Float(data, 4);
-		r = uint8Vector2Float(data, 8);
-
+		// p = uint8Vector2Float(data, 4);
+		// r = uint8Vector2Float(data, 8);
+		p = 0;
+		r = 0;
 		launch_imu.header.stamp = this->get_clock()->now();
 		launch_imu.header.frame_id = "launch_imu";
 		launch_imu.y = y;
@@ -53,6 +58,20 @@ void SerialObj::_timer_callback(){
 		launch_imu.r = r;
 
 		_imuPublisher->publish(launch_imu);
+	}
+	if(command == cmd::Command_Type::LAUNCH){
+
+		int launch = 0;
+		communicate_msg::msg::Int32 launch_data;
+		launch = (int)data[0];
+
+		launch_data.header.stamp = this->get_clock()->now();
+		launch_data.header.frame_id = "launch";
+		launch_data.data = launch;
+		
+
+		_launchPublisher->publish(launch_data);
+
 	}
 }
 
@@ -72,8 +91,10 @@ void SerialObj::_joy_callback(const sensor_msgs::msg::Joy::SharedPtr msg){
 	
 	printf("speed: %f, theta: %f", speed, theta);
 	printf(", w: %f\n", w);
-
-	if(start == 1){
+	if(start != 1){
+		restart_flag = true;
+	}
+	if(start == 1 && restart_flag){
 		std::vector<uint8_t> data;
 		for(int i = 0; i< 4; ++i){
 			uint8_t tmp = ((uint8_t *)&speed)[i];

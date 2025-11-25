@@ -5,7 +5,7 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "serial/serial.h"
-#include "SerialCommunicate.h"
+#include "at9s/SerialCommunicate.h"
 
 cmd::CommandProtocol::CommandProtocol(){
 

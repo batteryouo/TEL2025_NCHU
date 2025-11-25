@@ -10,6 +10,7 @@
 #include "SerialCommunicate.h"
 #include "communicate_msg/msg/mecanum.hpp"
 #include "communicate_msg/msg/imu.hpp"
+#include "communicate_msg/msg/int32.hpp"
 
 class SerialObj: public rclcpp::Node{
 	public:
@@ -27,6 +28,7 @@ class SerialObj: public rclcpp::Node{
 		rclcpp::TimerBase::SharedPtr timer_;
 		rclcpp::Publisher<communicate_msg::msg::Mecanum>::SharedPtr publisher_;
 		rclcpp::Publisher<communicate_msg::msg::Imu>::SharedPtr _imuPublisher;
+		rclcpp::Publisher<communicate_msg::msg::Int32>::SharedPtr _launchPublisher;
 
 		SerialCommunicate serialCommunicate;
 
