@@ -22,13 +22,14 @@ class SerialObj: public rclcpp::Node{
 		std::string _port;
 		serial::Serial _ser;
 		rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr _joy_subscription;
-		rclcpp::Subscription<communicate_msg::msg::Mecanum>::ShaerdPtr _move_subscription;
+		rclcpp::Subscription<communicate_msg::msg::Mecanum>::SharedPtr _move_subscription;
+		rclcpp::Subscription<communicate_msg::msg::Int32>::SharedPtr _launch_subscription;
 
 		void _joy_callback(const sensor_msgs::msg::Joy::SharedPtr msg);
 		void _move_callback(const communicate_msg::msg::Mecanum::SharedPtr msg);
+		void _launch_callback(const communicate_msg::msg::Int32::SharedPtr msg);
 		void _timer_callback();
 		rclcpp::TimerBase::SharedPtr timer_;
-		rclcpp::Publisher<communicate_msg::msg::Mecanum>::SharedPtr publisher_;
 		rclcpp::Publisher<communicate_msg::msg::Imu>::SharedPtr _imuPublisher;
 		rclcpp::Publisher<communicate_msg::msg::Int32>::SharedPtr _launchPublisher;
 

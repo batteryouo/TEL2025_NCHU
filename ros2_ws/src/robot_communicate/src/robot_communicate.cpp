@@ -24,8 +24,10 @@ float uint8Vector2Float(std::vector<uint8_t> data, int bias = 0){
 SerialObj::SerialObj():Node("test_serial_node"){
 	_joy_subscription = this->create_subscription<sensor_msgs::msg::Joy>("joy", 10,	
 		std::bind(&SerialObj::_joy_callback, this, std::placeholders::_1) );
-	_move_subscription = this->create_subscription<communicate_msg::msg::Mecanum>("/move", 10,
+	_move_subscription = this->create_subscription<communicate_msg::msg::Mecanum>("move", 10,
 		std::bind(&SerialObj::_move_callback, this, std::placeholders::_1));
+	_launch_subscription = this->create_subscription<communicate_msg::msg::Int32>("auto_launch", 10,
+		std::bind(&SerialObj::_launch_callback, this, std::placeholders::_1));
 	
 	_imuPublisher = this->create_publisher<communicate_msg::msg::Imu>("launch_imu", 10);
 	_launchPublisher = this->create_publisher<communicate_msg::msg::Int32>("launch", 10);
@@ -149,4 +151,11 @@ void _move_callback(const communicate_msg::msg::Mecanum::SharedPtr msg){
 	}
 
 	serialCommunicate.write(data, cmd::Command_Type::MOVE_POLAR);
+}
+
+void _launch_callback(const communicate_msg::msg::Int32::SharedPtr msg){
+	std::vector<uint8_t> data;
+	int32_t launch = msg->data;
+	data.push_back((uint8_t)launch);
+	serialCommunicate.write(data, cmd::Command_Type::LAUNCH);	
 }
