@@ -35,9 +35,12 @@ class SerialObj: public rclcpp::Node{
 		rclcpp::Publisher<communicate_msg::msg::Imu>::SharedPtr _imuPublisher;
 		rclcpp::Publisher<communicate_msg::msg::Int32>::SharedPtr _launchPublisher;
 		rclcpp::Publisher<communicate_msg::msg::Int32>::SharedPtr _modePublisher;
+		rclcpp::Publisher<communicate_msg::msg::Int32>::SharedPtr _startPublisher;
 
 		SerialCommunicate serialCommunicate;
 		bool restart_flag = false;
+		int32_t reliableStart = -1;
+		int32_t mode = 0;
 
 
 };

@@ -22,18 +22,15 @@ float uint8Vector2Float(std::vector<uint8_t> data, int bias = 0){
 }
 
 SerialObj::SerialObj():Node("test_serial_node"){
-	_joy_subscription = this->create_subscription<sensor_msgs::msg::Joy>("joy", 10,	
-		std::bind(&SerialObj::_joy_callback, this, std::placeholders::_1) );
-	_move_subscription = this->create_subscription<communicate_msg::msg::Mecanum>("move", 10,
-		std::bind(&SerialObj::_move_callback, this, std::placeholders::_1));
-	_launch_subscription = this->create_subscription<communicate_msg::msg::Int32>("auto_launch", 10,
-		std::bind(&SerialObj::_launch_callback, this, std::placeholders::_1));
-	_launch_angle_subscription = this->create_subscription<communicate_msg::msg::Imu>("auto_launch_angle", 10,
-		std::bind(&SerialObj::_launch_angle_callback, this, std::placeholders::_1)); 
+	_joy_subscription = this->create_subscription<sensor_msgs::msg::Joy>("joy", 10,	std::bind(&SerialObj::_joy_callback, this, std::placeholders::_1) );
+	_move_subscription = this->create_subscription<communicate_msg::msg::Mecanum>("move", 10, std::bind(&SerialObj::_move_callback, this, std::placeholders::_1));
+	_launch_subscription = this->create_subscription<communicate_msg::msg::Int32>("auto_launch", 10, std::bind(&SerialObj::_launch_callback, this, std::placeholders::_1));
+	_launch_angle_subscription = this->create_subscription<communicate_msg::msg::Imu>("auto_launch_angle", 10, std::bind(&SerialObj::_launch_angle_callback, this, std::placeholders::_1)); 
 	
 	_imuPublisher = this->create_publisher<communicate_msg::msg::Imu>("launch_imu", 10);
 	_launchPublisher = this->create_publisher<communicate_msg::msg::Int32>("launch", 10);
 	_modePublisher = this->create_publisher<communicate_msg::msg::Int32>("mode", 10);
+	_startPublisher = this->create_publisher<communicate_msg::msg::Int32>("start", 10);
 	timer_ = this->create_wall_timer(1ms, std::bind(&SerialObj::_timer_callback, this)) ;
 	
 	this->declare_parameter("port", "/dev/ttyACM0");
@@ -49,7 +46,6 @@ SerialObj::~SerialObj(){
 void SerialObj::_timer_callback(){
 	std::vector<uint8_t> data;
 	cmd::Command_Type command = serialCommunicate.read(data);
-
 	if(command == cmd::Command_Type::IMU_YPR){
 		communicate_msg::msg::Imu launch_imu;
 		float y, p, r;
@@ -76,7 +72,6 @@ void SerialObj::_timer_callback(){
 		launch_data.header.frame_id = "launch";
 		launch_data.data = launch;
 		
-
 		_launchPublisher->publish(launch_data);
 
 	}
@@ -90,58 +85,90 @@ void SerialObj::_joy_callback(const sensor_msgs::msg::Joy::SharedPtr msg){
 	float knob = msg->axes[3];
 
 	int32_t launch = msg->buttons[0];
-	int32_t mode = msg->buttons[1];
+	mode = msg->buttons[1];
 	int32_t start = msg->buttons[2];
 
 	float speed = std::sqrt(v_x*v_x + v_y*v_y);
 	float theta = std::atan2(v_y, v_x);
 	
-	printf("speed: %f, theta: %f", speed, theta);
-	printf(", w: %f\n", w);
+	printf("speed: %f, theta: %f, w %f\n", speed, theta, w);
 	if(start != 1){
 		restart_flag = true;
 	}
 	if(start == 1 && restart_flag){
-		std::vector<uint8_t> data;
-		for(int i = 0; i< 4; ++i){
-			uint8_t tmp = ((uint8_t *)&speed)[i];
-			data.push_back(tmp);
-		}
-		for(int i = 0; i< 4; ++i){
-			uint8_t tmp = ((uint8_t *)&theta)[i];
-			data.push_back(tmp);
-		}
-		for(int i = 0; i< 4; ++i){
-			uint8_t tmp = ((uint8_t *)&w)[i];
-			data.push_back(tmp);
-		}
 
-		serialCommunicate.write(data, cmd::Command_Type::MOVE_POLAR);
+		if(mode == 0){
+			std::vector<uint8_t> data;
+			for(int i = 0; i< 4; ++i){
+				uint8_t tmp = ((uint8_t *)&speed)[i];
+				data.push_back(tmp);
+			}
+			for(int i = 0; i< 4; ++i){
+				uint8_t tmp = ((uint8_t *)&theta)[i];
+				data.push_back(tmp);
+			}
+			for(int i = 0; i< 4; ++i){
+				uint8_t tmp = ((uint8_t *)&w)[i];
+				data.push_back(tmp);
+			}
 
-		data.clear();
-		for(int i = 0; i< 4; ++i){
-			// knob data has already normalized to 0~1
-			uint8_t tmp = ((uint8_t*)&knob)[i];
-			data.push_back(tmp);
+			serialCommunicate.write(data, cmd::Command_Type::MOVE_POLAR);
+
+			data.clear();
+			for(int i = 0; i< 4; ++i){
+				// knob data has already normalized to 0~1
+				uint8_t tmp = ((uint8_t*)&knob)[i];
+				data.push_back(tmp);
+			}
+			serialCommunicate.write(data, cmd::Command_Type::LAUNCH_ANGLE_NORMALIZE);
+
+			data.clear();
+			data.push_back((uint8_t)launch);
+			serialCommunicate.write(data, cmd::Command_Type::LAUNCH);
+	
 		}
-		serialCommunicate.write(data, cmd::Command_Type::LAUNCH_ANGLE_NORMALIZE);
-
-		data.clear();
-		data.push_back((uint8_t)launch);
-		serialCommunicate.write(data, cmd::Command_Type::LAUNCH);
-
 		communicate_msg::msg::Int32 mode_data;
-		mode_data.data = mode
+		mode_data.data = mode;
 		mode_data.header.stamp = this->get_clock()->now();
 		mode_data.header.frame_id = "mode";
-
 		_modePublisher->publish(mode_data);
 
 	}
+	if(restart_flag){
+		this->reliableStart = start;
+	}
+	// if(this->reliableStart == 0){
+	// 	std::vector<uint8_t> data;
+	// 	float v = 0;
+	// 	float theta = 0;
+	// 	float w = 0;
+		
+	// 	for(int i = 0; i< 4; ++i){
+	// 		uint8_t tmp = ((uint8_t *)&v)[i];
+	// 		data.push_back(tmp);
+	// 	}
+	// 	for(int i = 0; i< 4; ++i){
+	// 		uint8_t tmp = ((uint8_t *)&theta)[i];
+	// 		data.push_back(tmp);
+	// 	}
+	// 	for(int i = 0; i< 4; ++i){
+	// 		uint8_t tmp = ((uint8_t *)&w)[i];
+	// 		data.push_back(tmp);
+	// 	}
+	// 	serialCommunicate.write(data, cmd::Command_Type::MOVE_POLAR);		
+	// }
+	communicate_msg::msg::Int32 start_data;
+	start_data.data = this->reliableStart;
+	start_data.header.stamp = this->get_clock()->now();
+	start_data.header.frame_id = "start";
+	_startPublisher->publish(start_data);
 	
 }
 
 void SerialObj::_move_callback(const communicate_msg::msg::Mecanum::SharedPtr msg){
+	if(this->reliableStart == 0 || this->mode == 0){
+		return;
+	}
 	float speed = msg->speed;
 	float theta = msg->angle;
 	float w = msg->w;
@@ -164,6 +191,9 @@ void SerialObj::_move_callback(const communicate_msg::msg::Mecanum::SharedPtr ms
 }
 
 void SerialObj::_launch_callback(const communicate_msg::msg::Int32::SharedPtr msg){
+	if(this->reliableStart == 0 || this->mode == 0){
+		return;
+	}
 	std::vector<uint8_t> data;
 	int32_t launch = msg->data;
 	data.push_back((uint8_t)launch);
@@ -171,7 +201,9 @@ void SerialObj::_launch_callback(const communicate_msg::msg::Int32::SharedPtr ms
 }
 
 void SerialObj::_launch_angle_callback(const communicate_msg::msg::Imu::SharedPtr msg){
-	
+	if(this->reliableStart == 0 || this->mode == 0){
+		return;
+	}
 	std::vector<uint8_t> data;
 	float knob = msg->y;
 	

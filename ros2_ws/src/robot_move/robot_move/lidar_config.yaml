@@ -1,0 +1,44 @@
+lidar_nav:
+  target_dist: 3        # 停車距離
+  
+  detection:
+    max_range: 10.0         # 最大搜尋距離
+    roi_angle_deg: 22.5    # 尋找板子的視野角度
+    
+    # 車身濾除框 (根據您的車體設定)
+    filter_box:
+      x_min: -100.0         
+      x_max: 0.10          
+      y_min: -0.30         
+      y_max: 0.30          
+    
+  cluster:
+    tolerance: 0.15        
+    min_size: 5            
+    
+  scores:
+    point_weight: 0.0      
+    slope_penalty: 0.0     
+    rmse_penalty: 20.0     
+    dist_weight: 1.0       
+    
+  tracking:
+    tolerance: 0.5         
+    
+  anti_jitter:
+    smooth_window: 5       
+    stop_tolerance: 0.05   # 停止容忍誤差
+    min_move_speed: 0.08   
+    min_rot_speed: 0.1     
+    
+  # [修改] 避障策略：單純停等
+  avoidance:
+    enable: true           
+    stop_dist: 1.0         # 進入此距離(公尺)內，強制停車等待
+    
+  pid:
+    kp_angular: 1.2        # 轉向 P Gain
+    kp_linear: 2.0         # 前進 P Gain
+    kp_lateral: 0.0        # [修改] 設為 0，禁用橫移 (也可在程式碼中強制歸零)
+    max_speed: 5.0         
+    search_rot_speed: 0.0

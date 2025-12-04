@@ -211,7 +211,9 @@ cmd::Command_Type SerialCommunicate::read(std::vector<uint8_t> &outputData){
 		_input.erase(0, _i+1);
 	}
 	return returnCMD;
+	
 }
+
 
 void SerialCommunicate::write(const std::vector<uint8_t> &inputData, cmd::Command_Type inputCommand){
 	std::vector<uint8_t> outputPacket;

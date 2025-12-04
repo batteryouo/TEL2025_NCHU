@@ -1,0 +1,46 @@
+lidar_nav:
+  target_dist: 3.0
+  
+  detection:
+    max_range: 10.0
+    roi_angle_deg: 22.5
+     
+    filter_box:
+      x_min: -100.0         
+      x_max: 0.10          
+      y_min: -0.30         
+      y_max: 0.30          
+    
+  cluster:
+    tolerance: 0.15        
+    min_size: 5            
+    
+  scores:
+    point_weight: 0.0      
+    slope_penalty: 0.0     
+    rmse_penalty: 20.0     
+    dist_weight: 1.0       
+    
+  tracking:
+    tolerance: 0.5         
+    
+  anti_jitter:
+    smooth_window: 5       
+    stop_tolerance: 0.05
+    min_move_speed: 0.08   
+    min_rot_speed: 0.1     
+    
+
+  avoidance:
+    enable: true           
+    stop_dist: 1.0
+    
+  pid:
+    kp_angular: 1.2
+    kp_linear: 5.0
+    kp_lateral: 0.0
+    max_speed: 5.0         
+    search_rot_speed: 0.0
+
+cam_param:
+  vCenter: 605
